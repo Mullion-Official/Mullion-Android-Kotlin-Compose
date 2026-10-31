@@ -71,7 +71,7 @@ The final APK launches the device-operations reference app, not the component ca
 | 411dp BottomBar single pane; 673dp Rail two panes; 914dp Drawer two panes after preview fallback; 1280dp Drawer three panes | PASS |
 | `demo_fullscreen` hides system bars for clean recording; normal launch restores them | PASS |
 
-Evidence: `docs/images/ref-workbench.png`, `ref-devices-fold.png`, `ref-devices-3pane.png`, `ref-settings.png`, `ref-device-detail.png`, `ref-activity.png`.
+Evidence: `docs/images/ref-light-workbench.png`, `ref-dark-workbench.png`, `ref-light-fold.png`, `ref-light-3pane.png`, `ref-settings.png`, `ref-device-detail.png`, `ref-activity.png`.
 
 ### Why 914dp shows two panes
 
@@ -123,11 +123,18 @@ On a physical foldable (Pixel Fold / 9 Pro Fold), `WindowInfoTracker` supplies `
 
 `docs/media/mullion-demo.mp4`
 
-- 1080×1920, 30fps, H.264, 64.5s, no audio (add your own Douyin music).
-- Intro/outro title cards + two live reference-app takes:
-  workbench → B4 detail → metrics/logs → restart confirm → permission sheet → filter → settings.
-- Recorded in `demo_fullscreen` mode so no status/navigation bars appear.
+- 1080×1920, 30fps, H.264, 47.5s, no audio (add your own Douyin music).
+- Intro/outro title cards + light and dark live reference-app takes: workbench → B4 detail → metrics/logs → settings, then the same screens in system dark.
+- Recorded in `demo_fullscreen` mode so no status/navigation bars distract from the UI.
+- Light and dark screenshots: `docs/images/ref-light-workbench.png`, `ref-dark-workbench.png`.
 - A cover image is at `docs/media/mullion-cover.png`.
+
+## Theme verification
+
+- System light (`cmd uimode night no`) and system dark (`cmd uimode night yes`) both verified on the reference app.
+- The same screens, cards, switches, sliders, dialogs and permission sheet render with the correct palette; no hardcoded white text remains in the reference app.
+- View tier resolves `values` / `values-night` through `MullionPalette.of(context)`; `MullionCardView` and `MullionButtonView` were checked in both modes.
+- Bottom navigation is a translucent overlay; system navigation is transparent with `isNavigationBarContrastEnforced = false`, and the overlay receives the bottom inset so its content stays in the safe area.
 
 ## Known test limitations
 

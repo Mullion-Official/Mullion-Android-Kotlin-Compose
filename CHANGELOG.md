@@ -12,24 +12,31 @@ semantic versioning.
   morphology, `PaneStrategy` / `PanePlan`, hinge geometry (`HingeInfo`,
   `Foldables`), shared metrics, type steps, insets and immutable
   `MullionWindowState`.
-- `mullion-compose`: MULLION theme and glass recipe, window provider with
-  `WindowInfoTracker` + system/IME insets, 14 adaptive components and 12 base
-  components (26 total).
+- `mullion-compose`: adaptive light/dark MULLION theme (`MullionPalette`,
+  `LocalMullionPalette`, `MullionColors` facade), palette-aware glass recipe,
+  window provider with `WindowInfoTracker` + system/IME insets, 14 adaptive
+  components and 12 base components (26 total).
 - `mullion-view`: `MullionBreakpointLayout`, `MullionPaneLayout`,
   `MullionGlassLayout`, `MullionCardView`, `MullionButtonView`,
   `ResourceScaler`, `MullionEdgeToEdge` and the `values-w600dp` /
-  `values-w840dp` resource buckets.
+  `values-w840dp` resource buckets. Colors now resolve from `values` /
+  `values-night` via `MullionPalette.of(context)`.
 - `sample`: a real reference application — an equipment-operations console
   with a repository-backed `ReferenceViewModel`, search/filter, list-detail-
   preview, restart confirmation, actual runtime permissions, snackbars,
-  activity timeline, settings and window diagnostics. The 26-module glass
-  cabinet is kept as a separate `CabinetActivity` reachable from Settings.
+  activity timeline, settings and window diagnostics. The reference app is
+  deliberately light-first and product-neutral, not a dark sci-fi showroom.
+  The 26-module cabinet is kept as a separate `CabinetActivity` reachable from
+  Settings and follows the same adaptive theme.
 - 33 `mullion-core` unit tests covering thresholds, pane plans, fold splits,
   resource buckets, type steps and insets.
 - 5 `sample` ViewModel tests covering load, selection cleanup, restart success,
   offline restart failure and permission results.
 - `MultiPane` / `SearchLayout` content-width fallback: a preview/filter rail is
   dropped before the detail pane can collapse into a one-character column.
+- Immersive bottom navigation: translucent overlay above scrolling content,
+  system navigation bar transparent with contrast enforcement disabled, and
+  the overlay still receives the bottom safe inset.
 - Apache-2.0 license, contributor docs, security policy, issue/PR templates,
   GitHub Actions CI and a static design reference (`docs/showcase.html`).
 - Maven publications with sources jars for `dev.mullion:core`,

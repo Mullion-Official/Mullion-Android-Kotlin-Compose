@@ -59,38 +59,34 @@ import dev.mullion.compose.theme.glass
 import dev.mullion.compose.window.mullionWindow
 import dev.mullion.core.Bp
 
-/** Radial mesh + blueprint grid behind the entire sample. */
+/** A quiet, theme-aware wash behind the cabinet. No neon, no blueprint. */
 @Composable
 fun SampleBackdrop(modifier: Modifier = Modifier) {
+    val background = MullionColors.Background
+    val tint = MullionColors.Volt
+    val grid = MullionColors.Ink.copy(alpha = 0.025f)
     Canvas(modifier = modifier.fillMaxSize()) {
-        drawRect(MullionColors.Background)
+        drawRect(background)
         drawRect(
             Brush.radialGradient(
-                colors = listOf(Color(0x880E5E74), Color.Transparent),
-                center = Offset(size.width * 0.12f, 0f),
-                radius = size.width * 0.85f,
+                colors = listOf(tint.copy(alpha = 0.07f), Color.Transparent),
+                center = Offset(size.width * 0.18f, 0f),
+                radius = size.width * 0.9f,
             ),
         )
         drawRect(
             Brush.radialGradient(
-                colors = listOf(Color(0x33123B5E), Color.Transparent),
-                center = Offset(size.width * 0.92f, size.height * 0.28f),
+                colors = listOf(tint.copy(alpha = 0.035f), Color.Transparent),
+                center = Offset(size.width * 0.9f, size.height * 0.35f),
                 radius = size.width * 0.7f,
             ),
         )
-        drawRect(
-            Brush.radialGradient(
-                colors = listOf(Color(0x330C4A44), Color.Transparent),
-                center = Offset(size.width * 0.28f, size.height * 0.9f),
-                radius = size.width * 0.8f,
-            ),
-        )
 
-        val step = 44.dp.toPx()
+        val step = 56.dp.toPx()
         var x = 0f
         while (x < size.width) {
             drawLine(
-                color = Color.White.copy(alpha = 0.035f),
+                color = grid,
                 start = Offset(x, 0f),
                 end = Offset(x, size.height),
                 strokeWidth = 1f,
@@ -100,7 +96,7 @@ fun SampleBackdrop(modifier: Modifier = Modifier) {
         var y = 0f
         while (y < size.height) {
             drawLine(
-                color = Color.White.copy(alpha = 0.035f),
+                color = grid,
                 start = Offset(0f, y),
                 end = Offset(size.width, y),
                 strokeWidth = 1f,
@@ -139,7 +135,7 @@ fun Lab(
     size: Int = 10,
 ) {
     Text(
-        text = text.uppercase(),
+        text = text,
         modifier = modifier,
         style = MullionTextStyles.Label.copy(fontSize = size.sp),
         color = color,
@@ -281,19 +277,22 @@ fun BrandMark(
     size: Dp = 152.dp,
     intensity: Float = 1f,
 ) {
+    val ink = MullionColors.Ink
+    val volt = MullionColors.Volt
+    val voltHigh = MullionColors.VoltHigh
     Canvas(modifier = modifier.size(size)) {
         val s = this.size.minDimension / 160f
         fun p(value: Float): Float = value * s
 
         // Frame fill
         drawRoundRect(
-            color = Color.White.copy(alpha = 0.05f * intensity),
+            color = ink.copy(alpha = 0.05f * intensity),
             topLeft = Offset(p(18f), p(18f)),
             size = Size(p(124f), p(124f)),
             cornerRadius = CornerRadius(p(30f), p(30f)),
         )
         drawRoundRect(
-            color = Color.White.copy(alpha = 0.22f * intensity),
+            color = ink.copy(alpha = 0.22f * intensity),
             topLeft = Offset(p(18f), p(18f)),
             size = Size(p(124f), p(124f)),
             cornerRadius = CornerRadius(p(30f), p(30f)),
@@ -302,13 +301,13 @@ fun BrandMark(
 
         // Transoms
         drawLine(
-            color = Color.White.copy(alpha = 0.3f * intensity),
+            color = ink.copy(alpha = 0.30f * intensity),
             start = Offset(p(18f), p(62f)),
             end = Offset(p(80f), p(62f)),
             strokeWidth = p(1.5f),
         )
         drawLine(
-            color = Color.White.copy(alpha = 0.3f * intensity),
+            color = ink.copy(alpha = 0.30f * intensity),
             start = Offset(p(80f), p(100f)),
             end = Offset(p(142f), p(100f)),
             strokeWidth = p(1.5f),
@@ -316,7 +315,7 @@ fun BrandMark(
 
         // Mullion glow + line
         drawLine(
-            color = MullionColors.Volt.copy(alpha = 0.16f * intensity),
+            color = volt.copy(alpha = 0.16f * intensity),
             start = Offset(p(80f), p(18f)),
             end = Offset(p(80f), p(142f)),
             strokeWidth = p(11f),
@@ -324,7 +323,7 @@ fun BrandMark(
         )
         drawLine(
             brush = Brush.verticalGradient(
-                colors = listOf(MullionColors.VoltHigh, MullionColors.Volt),
+                colors = listOf(voltHigh, volt),
                 startY = p(18f),
                 endY = p(142f),
             ),
@@ -336,13 +335,13 @@ fun BrandMark(
 
         // Lit pane
         drawRoundRect(
-            color = MullionColors.Volt.copy(alpha = 0.14f * intensity),
+            color = volt.copy(alpha = 0.14f * intensity),
             topLeft = Offset(p(27f), p(71f)),
             size = Size(p(44f), p(61f)),
             cornerRadius = CornerRadius(p(10f), p(10f)),
         )
         drawRoundRect(
-            color = MullionColors.Volt.copy(alpha = 0.5f * intensity),
+            color = volt.copy(alpha = 0.5f * intensity),
             topLeft = Offset(p(27f), p(71f)),
             size = Size(p(44f), p(61f)),
             cornerRadius = CornerRadius(p(10f), p(10f)),
@@ -350,7 +349,7 @@ fun BrandMark(
         )
 
         // Corner brackets
-        val bracketColor = Color.White.copy(alpha = 0.32f * intensity)
+        val bracketColor = ink.copy(alpha = 0.32f * intensity)
         fun bracket(x1: Float, y1: Float, x2: Float, y2: Float, x3: Float, y3: Float) {
             val path = Path().apply {
                 moveTo(p(x1), p(y1))

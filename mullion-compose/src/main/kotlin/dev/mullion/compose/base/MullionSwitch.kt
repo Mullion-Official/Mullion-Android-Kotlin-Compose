@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -73,7 +74,7 @@ public fun MullionSwitch(
         if (label != null) {
             Text(
                 text = label,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 11.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 11.sp),
                 color = if (enabled) MullionColors.Muted else MullionColors.Faint.copy(alpha = 0.5f),
                 modifier = Modifier.weight(1f),
                 maxLines = 1,
@@ -114,7 +115,8 @@ public fun MullionSwitch(
                         shape = CircleShape,
                         clip = false,
                     )
-                    .background(MullionColors.Ink, CircleShape),
+                    .background(Color.White, CircleShape)
+                    .border(1.dp, MullionColors.EdgeHigh, CircleShape),
             )
         }
     }

@@ -68,7 +68,7 @@ public fun MullionCheckbox(
             Spacer(Modifier.width(9.dp))
             Text(
                 text = label,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 11.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 11.sp),
                 color = when {
                     !enabled -> MullionColors.Faint.copy(alpha = 0.5f)
                     checked || indeterminate -> MullionColors.Ink
@@ -94,17 +94,21 @@ private fun CheckboxGlyph(
         label = "Checkbox.fill",
     )
     val alpha = if (enabled) 1f else 0.45f
+    val ink = MullionColors.Ink
+    val volt = MullionColors.Volt
+    val voltHigh = MullionColors.VoltHigh
+    val onVolt = MullionColors.OnVolt
 
     Canvas(modifier = Modifier.size(18.dp)) {
         val corner = CornerRadius(5.dp.toPx(), 5.dp.toPx())
         drawRoundRect(
-            color = MullionColors.Ink.copy(alpha = 0.06f * alpha),
+            color = ink.copy(alpha = 0.06f * alpha),
             cornerRadius = corner,
         )
         if (progress > 0f) {
             drawRoundRect(
                 brush = Brush.verticalGradient(
-                    listOf(MullionColors.VoltHigh, MullionColors.Volt),
+                    listOf(voltHigh, volt),
                 ),
                 cornerRadius = corner,
                 alpha = progress * alpha,
@@ -112,9 +116,9 @@ private fun CheckboxGlyph(
         }
         drawRoundRect(
             color = if (active) {
-                MullionColors.Volt.copy(alpha = 0.55f * alpha)
+                volt.copy(alpha = 0.55f * alpha)
             } else {
-                MullionColors.Ink.copy(alpha = 0.3f * alpha)
+                ink.copy(alpha = 0.3f * alpha)
             },
             cornerRadius = corner,
             style = Stroke(width = 1.5.dp.toPx()),
@@ -122,7 +126,7 @@ private fun CheckboxGlyph(
 
         if (indeterminate) {
             drawLine(
-                color = MullionColors.OnVolt.copy(alpha = alpha),
+                color = onVolt.copy(alpha = alpha),
                 start = Offset(size.width * 0.25f, size.height * 0.5f),
                 end = Offset(size.width * 0.75f, size.height * 0.5f),
                 strokeWidth = 2.dp.toPx(),
@@ -136,7 +140,7 @@ private fun CheckboxGlyph(
             }
             drawPath(
                 path = path,
-                color = MullionColors.OnVolt.copy(alpha = alpha),
+                color = onVolt.copy(alpha = alpha),
                 style = Stroke(
                     width = 2.dp.toPx(),
                     cap = StrokeCap.Round,
@@ -175,7 +179,7 @@ public fun MullionRadio(
             Spacer(Modifier.width(9.dp))
             Text(
                 text = label,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 11.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 11.sp),
                 color = when {
                     !enabled -> MullionColors.Faint.copy(alpha = 0.5f)
                     selected -> MullionColors.Ink
@@ -196,13 +200,17 @@ private fun RadioGlyph(selected: Boolean, enabled: Boolean) {
         label = "Radio.fill",
     )
     val alpha = if (enabled) 1f else 0.45f
+    val ink = MullionColors.Ink
+    val volt = MullionColors.Volt
+    val voltHigh = MullionColors.VoltHigh
+    val onVolt = MullionColors.OnVolt
 
     Canvas(modifier = Modifier.size(18.dp)) {
         val radius = size.minDimension / 2f
         if (progress > 0f) {
             drawCircle(
                 brush = Brush.linearGradient(
-                    listOf(MullionColors.VoltHigh, MullionColors.Volt),
+                    listOf(voltHigh, volt),
                 ),
                 radius = radius,
                 alpha = progress * alpha,
@@ -210,16 +218,16 @@ private fun RadioGlyph(selected: Boolean, enabled: Boolean) {
         }
         drawCircle(
             color = if (selected) {
-                MullionColors.Volt.copy(alpha = 0.55f * alpha)
+                volt.copy(alpha = 0.55f * alpha)
             } else {
-                MullionColors.Ink.copy(alpha = 0.3f * alpha)
+                ink.copy(alpha = 0.3f * alpha)
             },
             radius = radius - 0.75.dp.toPx(),
             style = Stroke(width = 1.5.dp.toPx()),
         )
         if (progress > 0f) {
             drawCircle(
-                color = MullionColors.OnVolt.copy(alpha = progress * alpha),
+                color = onVolt.copy(alpha = progress * alpha),
                 radius = 3.5.dp.toPx() * progress,
             )
         }

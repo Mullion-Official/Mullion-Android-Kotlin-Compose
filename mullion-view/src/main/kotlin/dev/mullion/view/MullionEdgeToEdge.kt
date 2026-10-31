@@ -1,6 +1,7 @@
 package dev.mullion.view
 
 import android.app.Activity
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.view.View
@@ -30,8 +31,12 @@ public object MullionEdgeToEdge {
             activity.window.statusBarColor = Color.TRANSPARENT
             activity.window.navigationBarColor = Color.TRANSPARENT
         }
-        WindowInsetsControllerCompat(activity.window, activity.window.decorView)
-            .isAppearanceLightStatusBars = false
+        val night = (activity.resources.configuration.uiMode and
+            Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        WindowInsetsControllerCompat(activity.window, activity.window.decorView).apply {
+            isAppearanceLightStatusBars = !night
+            isAppearanceLightNavigationBars = !night
+        }
     }
 
     /**

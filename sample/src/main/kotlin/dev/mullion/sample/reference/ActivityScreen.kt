@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.sp
 import dev.mullion.compose.base.MullionSegmentedControl
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.theme.MullionTextStyles
-import dev.mullion.sample.ui.Lab
 import dev.mullion.sample.ui.SampleBody
 import dev.mullion.sample.ui.SampleChip
 
@@ -54,17 +53,17 @@ fun ActivityScreen(
     ReferencePage {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 32.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 120.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Lab("AUDIT TRAIL / ${state.events.size} EVENTS", color = MullionColors.Volt, size = 9)
+                        RefLabel("操作记录 · ${state.events.size} 条", color = MullionColors.Volt, size = 9)
                         Spacer(Modifier.height(5.dp))
                         Text(
                             text = "动态",
-                            style = MullionTextStyles.Mono.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+                            style = MullionTextStyles.UI.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
                             color = MullionColors.Ink,
                         )
                         Spacer(Modifier.height(3.dp))
@@ -97,11 +96,11 @@ fun ActivityScreen(
 
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Lab("RETENTION", size = 8)
+                    RefLabel("保留策略", size = 8)
                     Spacer(Modifier.weight(1f))
                     Text(
                         text = "7 天 · 仅本地",
-                        style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                        style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                         color = MullionColors.Faint,
                     )
                 }
@@ -121,26 +120,26 @@ private fun ActivityEventCard(
             Spacer(Modifier.weight(1f))
             Text(
                 text = formatEventTime(event.timestamp),
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                 color = MullionColors.Faint,
             )
         }
         Spacer(Modifier.height(8.dp))
         Text(
             text = event.title,
-            style = MullionTextStyles.Mono.copy(fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
+            style = MullionTextStyles.UI.copy(fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
             color = MullionColors.Ink,
         )
         Text(
             text = event.detail,
-            style = MullionTextStyles.MonoSmall.copy(fontSize = 9.sp),
+            style = MullionTextStyles.UISmall.copy(fontSize = 9.sp),
             color = MullionColors.Muted,
         )
         if (onClick != null) {
             Spacer(Modifier.height(8.dp))
             Text(
                 text = "查看设备 →",
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                 color = MullionColors.Volt,
                 modifier = Modifier
                     .fillMaxWidth()

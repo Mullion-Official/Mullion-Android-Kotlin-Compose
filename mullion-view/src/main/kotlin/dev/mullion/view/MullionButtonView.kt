@@ -1,6 +1,7 @@
 package dev.mullion.view
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.LinearGradient
@@ -40,13 +41,14 @@ public open class MullionButtonView @JvmOverloads constructor(
         style = Paint.Style.STROKE
         strokeWidth = dp(1f)
     }
+    private var colors: MullionViewColors = MullionPalette.of(context)
     private val pressPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.argb(26, 255, 255, 255)
+        color = withAlpha(colors.ink, 26)
     }
     private val focusPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = dp(3f)
-        color = Color.argb(46, 53, 232, 255)
+        color = withAlpha(colors.volt, 46)
     }
     private val rect = RectF()
     private var shader: LinearGradient? = null
@@ -61,7 +63,7 @@ public open class MullionButtonView @JvmOverloads constructor(
 
     init {
         gravity = Gravity.CENTER
-        typeface = Typeface.MONOSPACE
+        typeface = Typeface.SANS_SERIF
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
         isClickable = true
         isFocusable = true
@@ -86,19 +88,21 @@ public open class MullionButtonView @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        shader = if (w > 0 && h > 0) {
-            LinearGradient(
-                0f,
-                0f,
-                0f,
-                h.toFloat(),
-                MullionPalette.VoltHigh,
-                MullionPalette.Volt,
-                Shader.TileMode.CLAMP,
-            )
-        } else {
-            null
-        }
+        shader = buildShader(w, h)
+    }
+
+    private fun buildShader(w: Int, h: Int): LinearGradient? = if (w > 0 && h > 0) {
+        LinearGradient(
+            0f,
+            0f,
+            0f,
+            h.toFloat(),
+            colors.voltHigh,
+            colors.volt,
+            Shader.TileMode.CLAMP,
+        )
+    } else {
+        null
     }
 
     override fun draw(canvas: Canvas) {
@@ -115,16 +119,16 @@ public open class MullionButtonView @JvmOverloads constructor(
 
                 MullionButtonVariant.Tonal -> {
                     fillPaint.shader = null
-                    fillPaint.color = Color.argb(33, 255, 255, 255)
+                    fillPaint.color = colors.tonal
                     canvas.drawRoundRect(rect, radius, radius, fillPaint)
-                    borderPaint.color = Color.argb(33, 255, 255, 255)
+                    borderPaint.color = colors.edge
                     rect.inset(0.5f, 0.5f)
                     canvas.drawRoundRect(rect, radius, radius, borderPaint)
                     rect.inset(-0.5f, -0.5f)
                 }
 
                 MullionButtonVariant.Outlined -> {
-                    borderPaint.color = Color.argb(140, 53, 232, 255)
+                    borderPaint.color = withAlpha(colors.volt, 140)
                     rect.inset(0.5f, 0.5f)
                     canvas.drawRoundRect(rect, radius, radius, borderPaint)
                     rect.inset(-0.5f, -0.5f)
@@ -153,14 +157,27 @@ public open class MullionButtonView @JvmOverloads constructor(
     private fun applyTextColor() {
         setTextColor(
             when (variant) {
-                MullionButtonVariant.Filled -> MullionPalette.OnVolt
-                MullionButtonVariant.Tonal -> MullionPalette.Ink
+                MullionButtonVariant.Filled -> colors.onVolt
+                MullionButtonVariant.Tonal -> colors.ink
                 MullionButtonVariant.Outlined,
                 MullionButtonVariant.Text,
-                -> MullionPalette.Volt
+                -> colors.volt
             },
         )
     }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        colors = MullionPalette.of(context)
+        pressPaint.color = withAlpha(colors.ink, 26)
+        focusPaint.color = withAlpha(colors.volt, 46)
+        shader = buildShader(width, height)
+        applyTextColor()
+        invalidate()
+    }
+
+    private fun withAlpha(color: Int, alpha: Int): Int =
+        Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
 
     private fun dp(value: Float): Float = value * resources.displayMetrics.density
 

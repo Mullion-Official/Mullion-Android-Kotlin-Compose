@@ -85,7 +85,7 @@ public fun MullionSegmentedControl(
             ) {
                 Text(
                     text = label,
-                    style = MullionTextStyles.MonoSmall.copy(
+                    style = MullionTextStyles.UISmall.copy(
                         fontSize = 10.5.sp,
                         fontWeight = if (selected) {
                             androidx.compose.ui.text.font.FontWeight.SemiBold

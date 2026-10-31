@@ -65,13 +65,14 @@ public fun MullionTabs(
     val visible = if (overflowEnabled) tabs.take(overflowAfter!!) else tabs
     val overflow = if (overflowEnabled) tabs.drop(overflowAfter!!) else emptyList()
     var menuOpen by remember { mutableStateOf(false) }
+    val edge = MullionColors.Edge
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .drawBehind {
                 drawLine(
-                    color = MullionColors.Edge,
+                    color = edge,
                     start = Offset(0f, size.height),
                     end = Offset(size.width, size.height),
                     strokeWidth = 1f,
@@ -114,7 +115,7 @@ public fun MullionTabs(
                                 text = {
                                     Text(
                                         text = tab.label,
-                                        style = MullionTextStyles.MonoSmall.copy(fontSize = 11.sp),
+                                        style = MullionTextStyles.UISmall.copy(fontSize = 11.sp),
                                     )
                                 },
                                 onClick = {
@@ -151,7 +152,7 @@ private fun TabItem(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = tab.label,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 11.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 11.sp),
                 color = if (selected) MullionColors.Volt else MullionColors.Muted,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -159,7 +160,7 @@ private fun TabItem(
             if (tab.badge != null) {
                 Text(
                     text = tab.badge,
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                     color = MullionColors.Amber,
                     modifier = Modifier.padding(start = 5.dp),
                 )

@@ -43,7 +43,7 @@ import dev.mullion.sample.ui.SampleBackdrop
 import dev.mullion.sample.ui.SampleTopBar
 import kotlinx.coroutines.launch
 
-private const val GITHUB_URL = "https://github.com/mullion-android/mullion"
+private const val GITHUB_URL = "https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose"
 
 /**
  * The glass cabinet: a live, scrollable sample of all 26 modules.

@@ -100,14 +100,14 @@ public fun MullionBadge(
                 MullionBadgeKind.Dot -> Unit
                 MullionBadgeKind.Number -> Text(
                     text = if ((count ?: 0) > 99) "99+" else (count ?: 0).toString(),
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 9.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 9.sp),
                     color = MullionColors.OnVolt,
                 )
 
                 MullionBadgeKind.Text -> Text(
-                    text = text.orEmpty().uppercase(),
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
-                    color = androidx.compose.ui.graphics.Color(0xFF3B1A00),
+                    text = text.orEmpty(),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
+                    color = MullionColors.Background,
                 )
             }
         }

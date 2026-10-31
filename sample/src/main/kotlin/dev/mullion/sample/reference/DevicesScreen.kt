@@ -47,15 +47,12 @@ import dev.mullion.compose.base.MullionRadio
 import dev.mullion.compose.base.MullionSegmentedControl
 import dev.mullion.compose.base.MullionTab
 import dev.mullion.compose.base.MullionTabs
-import dev.mullion.compose.theme.GlassLevel
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.theme.MullionTextStyles
-import dev.mullion.compose.theme.glass
 import dev.mullion.compose.adaptive.SizeClassText
 import dev.mullion.compose.window.currentBreakpoint
 import dev.mullion.compose.window.currentHinge
 import dev.mullion.core.PaneStrategy
-import dev.mullion.sample.ui.Lab
 import dev.mullion.sample.ui.SampleBody
 import dev.mullion.sample.ui.SampleChip
 
@@ -96,11 +93,11 @@ fun DevicesScreen(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Lab("FLEET / ${state.devices.size} DEVICES", color = MullionColors.Volt, size = 9)
+                    RefLabel("设备总览 · ${state.devices.size} 台", color = MullionColors.Volt, size = 9)
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = "设备",
-                        style = MullionTextStyles.Mono.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+                        style = MullionTextStyles.UI.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
                         color = MullionColors.Ink,
                     )
                 }
@@ -135,14 +132,14 @@ fun DevicesScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = "${state.filteredDevices.size} 台匹配 · ${state.filter.label}",
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                     color = MullionColors.Faint,
                 )
                 Spacer(Modifier.weight(1f))
                 if (state.refreshing) {
                     Text(
                         text = "同步中…",
-                        style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                        style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                         color = MullionColors.Volt,
                     )
                 }
@@ -205,7 +202,7 @@ private fun DeviceList(
     }
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 18.dp),
+        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 112.dp),
         verticalArrangement = Arrangement.spacedBy(7.dp),
     ) {
         items(devices, key = { it.id }) { device ->
@@ -256,14 +253,14 @@ private fun DeviceRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = device.name,
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 10.5.sp, fontWeight = FontWeight.SemiBold),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 10.5.sp, fontWeight = FontWeight.SemiBold),
                     color = MullionColors.Ink,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
                     text = "${device.model} · ${device.location}",
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                     color = MullionColors.Faint,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -275,23 +272,23 @@ private fun DeviceRow(
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(
                 text = "CPU ${device.metrics.cpuPercent}%",
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                 color = MullionColors.Faint,
             )
             Text(
                 text = "MEM ${device.metrics.memoryPercent}%",
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                 color = MullionColors.Faint,
             )
             Text(
                 text = "SIG ${device.metrics.signalPercent}%",
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                 color = if (device.metrics.signalPercent < 55) MullionColors.Amber else MullionColors.Faint,
             )
             Spacer(Modifier.weight(1f))
             Text(
                 text = device.lastSeen,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                 color = MullionColors.Faint,
             )
         }
@@ -310,7 +307,7 @@ private fun DeviceDetailPanel(
     val compact = currentBreakpoint().isCompact
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 14.dp, end = 14.dp, top = 8.dp, bottom = 26.dp),
+        contentPadding = PaddingValues(start = 14.dp, end = 14.dp, top = 8.dp, bottom = 112.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item {
@@ -332,14 +329,14 @@ private fun DeviceDetailPanel(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = device.name,
-                        style = MullionTextStyles.Mono.copy(fontSize = 17.sp, fontWeight = FontWeight.Bold),
+                        style = MullionTextStyles.UI.copy(fontSize = 17.sp, fontWeight = FontWeight.Bold),
                         color = MullionColors.Ink,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
                         text = "${device.model} · ${device.serial}",
-                        style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                        style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                         color = MullionColors.Faint,
                     )
                 }
@@ -392,7 +389,7 @@ private fun DeviceDetailPanel(
 private fun OverviewTab(device: Device) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         ReferenceSection {
-            Lab("SUMMARY", size = 8)
+            RefLabel("设备说明", size = 8)
             Spacer(Modifier.height(7.dp))
             SizeClassText(
                 text = device.description,
@@ -401,7 +398,7 @@ private fun OverviewTab(device: Device) {
             )
         }
         ReferenceSection {
-            Lab("INVENTORY", size = 8)
+            RefLabel("设备信息", size = 8)
             Spacer(Modifier.height(5.dp))
             InfoRow("位置", device.location)
             InfoRow("固件", device.firmware)
@@ -410,7 +407,7 @@ private fun OverviewTab(device: Device) {
             InfoRow("最后心跳", device.lastSeen)
         }
         ReferenceSection {
-            Lab("LIVE LOAD", size = 8)
+            RefLabel("实时负载", size = 8)
             Spacer(Modifier.height(10.dp))
             MetricBar("CPU", device.metrics.cpuPercent)
             Spacer(Modifier.height(10.dp))
@@ -436,11 +433,11 @@ private fun MetricsTab(device: Device) {
         }
         ReferenceSection {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Lab("24H CPU", size = 8)
+                RefLabel("24H CPU", size = 8)
                 Spacer(Modifier.weight(1f))
                 Text(
                     text = "样本 / 小时",
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                     color = MullionColors.Faint,
                 )
             }
@@ -450,18 +447,18 @@ private fun MetricsTab(device: Device) {
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 Text(
                     text = "温度 ${device.metrics.temperatureC}°C",
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                     color = if (device.metrics.temperatureC >= 40f) MullionColors.Signal else MullionColors.Faint,
                 )
                 Text(
                     text = "信号 ${device.metrics.signalPercent}%",
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                     color = MullionColors.Faint,
                 )
             }
         }
         ReferenceSection {
-            Lab("SAMPLING", size = 8)
+            RefLabel("采样设置", size = 8)
             Spacer(Modifier.height(6.dp))
             InfoRow("采样间隔", "10 秒")
             InfoRow("缓存窗口", "24 小时")
@@ -474,9 +471,9 @@ private fun MetricsTab(device: Device) {
 private fun LogsTab(device: Device) {
     ReferenceSection {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Lab("DEVICE LOG", size = 8)
+            RefLabel("设备日志", size = 8)
             Spacer(Modifier.weight(1f))
-            SampleChip("LIVE", selected = true)
+            SampleChip("实时", selected = true)
         }
         Spacer(Modifier.height(8.dp))
         device.logs.forEachIndexed { index, log ->
@@ -488,13 +485,13 @@ private fun LogsTab(device: Device) {
             ) {
                 Text(
                     text = log.time,
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                     color = MullionColors.Faint,
                     modifier = Modifier.width(42.dp),
                 )
                 Text(
                     text = log.level,
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                     color = when (log.level) {
                         "ERROR" -> MullionColors.Signal
                         "WARN" -> MullionColors.Amber
@@ -504,7 +501,7 @@ private fun LogsTab(device: Device) {
                 )
                 Text(
                     text = log.message,
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 9.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 9.sp),
                     color = MullionColors.Muted,
                     modifier = Modifier.weight(1f),
                 )
@@ -536,12 +533,12 @@ private fun DevicePreviewPanel(device: Device, onOpen: () -> Unit) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = device.name,
-                            style = MullionTextStyles.Mono.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
+                            style = MullionTextStyles.UI.copy(fontSize = 12.sp, fontWeight = FontWeight.Bold),
                             color = MullionColors.Ink,
                         )
                         Text(
                             text = device.location,
-                            style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                            style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                             color = MullionColors.Faint,
                         )
                     }
@@ -564,7 +561,7 @@ private fun DevicePreviewPanel(device: Device, onOpen: () -> Unit) {
         }
         item {
             ReferenceSection {
-                Lab("QUICK FACTS", size = 8)
+                RefLabel("关键信息", size = 8)
                 Spacer(Modifier.height(6.dp))
                 InfoRow("固件", device.firmware)
                 InfoRow("心跳", device.lastSeen)
@@ -586,7 +583,7 @@ fun DeviceFilterSheet(
         hinge = currentHinge(),
         dockSide = DockSide.Auto,
         title = {
-            Lab("FILTER / 设备筛选", color = MullionColors.Volt)
+            RefLabel("筛选设备", color = MullionColors.Volt)
         },
         sheetContent = {
             DeviceFilter.entries.forEach { filter ->

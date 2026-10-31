@@ -93,21 +93,26 @@ A screen describes *what* it has (list, detail, preview, nav items) and the fram
 
 `MullionTheme` installs:
 
-- A dark Material 3 color scheme with volt/signal/mint/amber semantics.
-- A type scale with monospace labels and a humanist sans body.
+- A light or dark Material 3 color scheme (default: `isSystemInDarkTheme()`), with volt/signal/mint/amber semantics.
+- `MullionPalette` via `LocalMullionPalette`; `MullionColors` is the composable facade components read.
+- A product-facing sans type scale. `MullionTextStyles.Mono` remains available for logs, IDs and device readouts, but is no longer the default voice.
 - Shapes (6/12/18/22/28dp).
 - `MullionDimens` via `LocalMullionDimens`.
+
+The View tier uses the same semantic names resolved from `values/colors.xml` and
+`values-night/colors.xml` through `MullionPalette.of(context)`. Glass, buttons
+and selected borders refresh on `onConfigurationChanged`.
 
 ### Glass
 
 `Modifier.glass(shape, level)`:
 
 1. Clips to the shape.
-2. Fills with a three-stop white gradient.
+2. Fills with a three-stop tint gradient (white in dark, ink in light).
 3. Draws a 1dp edge.
 4. Draws a 1dp top hairline.
 
-`GlassLevel` (Chip/Panel/Floating/Window) controls radii, alpha and elevation. This is a deterministic, API-21-safe recipe. It is not a live backdrop blur; Android’s `RenderEffect` is API 31+ and would make API 21–30 screenshots diverge, which is exactly the adaptation problem this library is trying to avoid.
+`GlassLevel` (Chip/Panel/Floating/Window) controls radii, alpha and elevation. The tint and alpha scale come from the active palette, so a light theme gets a subtle ink wash instead of invisible white-on-white. This is a deterministic, API-21-safe recipe. It is not a live backdrop blur; Android’s `RenderEffect` is API 31+ and would make API 21–30 screenshots diverge, which is exactly the adaptation problem this library is trying to avoid.
 
 ### Motion
 
@@ -121,7 +126,9 @@ Motion is implemented with Compose animation APIs (`AnimatedContent`, `AnimatedV
 
 ## View rendering
 
-`MullionGlassLayout` draws the same gradient/edge recipe in `draw()` before children; `MullionButtonView` draws its pill, border and press wash on a `TextView` canvas. Both are reflection-free and work on API 21.
+`MullionGlassLayout` draws the same gradient/edge recipe in `draw()` before children; `MullionButtonView` draws its pill, border and press wash on a `TextView` canvas. Both resolve light/night resources, rebuild shaders on configuration changes, and work on API 21.
+
+`AdaptiveScaffold` overlays the bottom navigation instead of reserving a solid strip. The bar is translucent, content scrolls behind it, and the overlay is pushed above the system navigation inset. `ReferenceApp` additionally disables navigation-bar contrast enforcement so the system bar itself is transparent edge-to-edge.
 
 `ResourceScaler` has two layers:
 

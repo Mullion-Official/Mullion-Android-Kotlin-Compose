@@ -106,8 +106,8 @@ public fun MullionButton(
                         Modifier.shadow(
                             elevation = 10.dp,
                             shape = CircleShape,
-                            ambientColor = MullionColors.Volt.copy(alpha = 0.4f),
-                            spotColor = MullionColors.Volt.copy(alpha = 0.55f),
+                            ambientColor = MullionColors.Ink.copy(alpha = 0.14f),
+                            spotColor = MullionColors.Ink.copy(alpha = 0.18f),
                         )
                     } else {
                         Modifier
@@ -152,7 +152,7 @@ public fun MullionButton(
             }
             Text(
                 text = text,
-                style = MullionTextStyles.Mono.copy(
+                style = MullionTextStyles.UI.copy(
                     fontSize = size.fontSize,
                     fontWeight = FontWeight.SemiBold,
                 ),
@@ -230,6 +230,7 @@ public fun MullionIconButton(
     }
 }
 
+@Composable
 private fun backgroundBrush(variant: MullionButtonVariant): Brush = when (variant) {
     MullionButtonVariant.Filled -> Brush.verticalGradient(
         listOf(MullionColors.VoltHigh, MullionColors.Volt),
@@ -244,6 +245,7 @@ private fun backgroundBrush(variant: MullionButtonVariant): Brush = when (varian
     -> Brush.verticalGradient(listOf(Color.Transparent, Color.Transparent))
 }
 
+@Composable
 private fun contentColor(variant: MullionButtonVariant): Color = when (variant) {
     MullionButtonVariant.Filled -> MullionColors.OnVolt
     MullionButtonVariant.Tonal -> MullionColors.Ink

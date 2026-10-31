@@ -207,15 +207,15 @@ private fun SnackbarCard(
     ) {
         Text(
             text = data.message,
-            style = MullionTextStyles.MonoSmall.copy(fontSize = 11.sp),
+            style = MullionTextStyles.UISmall.copy(fontSize = 11.sp),
             color = MullionColors.Ink,
             modifier = Modifier.weight(1f),
         )
         if (data.actionLabel != null) {
             Spacer(Modifier.width(12.dp))
             Text(
-                text = data.actionLabel.uppercase(),
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 10.sp),
+                text = data.actionLabel,
+                style = MullionTextStyles.UISmall.copy(fontSize = 10.sp),
                 color = MullionColors.Volt,
                 modifier = Modifier
                     .background(MullionColors.Transparent)

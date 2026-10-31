@@ -25,10 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -41,17 +44,14 @@ import dev.mullion.compose.base.MullionAvatar
 import dev.mullion.compose.base.MullionAvatarSize
 import dev.mullion.compose.base.MullionBadge
 import dev.mullion.compose.base.MullionBadgeKind
-import dev.mullion.compose.base.MullionIconButton
+import dev.mullion.compose.base.MullionButton
 import dev.mullion.compose.base.MullionProgressBar
 import dev.mullion.compose.base.MullionButtonSize
 import dev.mullion.compose.base.MullionButtonVariant
-import dev.mullion.compose.theme.GlassLevel
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.theme.MullionTextStyles
-import dev.mullion.compose.theme.glass
 import dev.mullion.compose.window.currentBreakpoint
 import dev.mullion.sample.ui.BrandMark
-import dev.mullion.sample.ui.Lab
 import dev.mullion.sample.ui.SampleBody
 
 /** Centers reference-app content at a readable engineering width. */
@@ -67,6 +67,35 @@ fun ReferencePage(
     }
 }
 
+/** Flat, theme-aware product surface. Used by the reference app instead of glass. */
+fun Modifier.appSurface(
+    shape: Shape = RoundedCornerShape(16.dp),
+    elevated: Boolean = false,
+): Modifier = composed {
+    val fill = if (elevated) MullionColors.BackgroundLift else MullionColors.BackgroundLift
+    this
+        .clip(shape)
+        .background(fill, shape)
+        .border(1.dp, MullionColors.Edge, shape)
+}
+
+@Composable
+fun RefLabel(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = MullionColors.Faint,
+    size: Int = 10,
+) {
+    Text(
+        text = text,
+        modifier = modifier,
+        style = MullionTextStyles.UILabel.copy(fontSize = size.sp),
+        color = color,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+    )
+}
+
 @Composable
 fun ReferenceTopBar(
     screen: RefScreen,
@@ -80,7 +109,7 @@ fun ReferenceTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 8.dp)
-            .glass(shape = CircleShape, level = GlassLevel.Floating)
+            .appSurface(shape = CircleShape)
             .padding(start = 14.dp, end = 10.dp, top = 7.dp, bottom = 7.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -88,17 +117,17 @@ fun ReferenceTopBar(
         Spacer(Modifier.width(9.dp))
         Column {
             Text(
-                text = "MULLION CONTROL",
-                style = MullionTextStyles.Mono.copy(
-                    fontSize = 10.5.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.4.sp,
+                text = "MULLION",
+                style = MullionTextStyles.UI.copy(
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 0.2.sp,
                 ),
                 color = MullionColors.Ink,
             )
             Text(
                 text = screen.label,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 10.5.sp),
                 color = MullionColors.Faint,
             )
         }
@@ -120,30 +149,26 @@ fun ReferenceTopBar(
                 )
                 Text(
                     text = "${state.alerts.size} 告警",
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                     color = MullionColors.Signal,
                 )
             }
             Spacer(Modifier.width(6.dp))
         }
-        MullionIconButton(
+        MullionButton(
+            text = "扫描",
             onClick = onScan,
             variant = MullionButtonVariant.Tonal,
             size = MullionButtonSize.S,
-            contentDescription = "扫描设备",
-        ) {
-            Text("⌁", style = MullionTextStyles.Mono.copy(fontSize = 17.sp), color = MullionColors.Volt)
-        }
+        )
         if (!compact) {
-            Spacer(Modifier.width(3.dp))
-            MullionIconButton(
+            Spacer(Modifier.width(6.dp))
+            MullionButton(
+                text = "刷新",
                 onClick = onRefresh,
-                variant = MullionButtonVariant.Tonal,
+                variant = MullionButtonVariant.Outlined,
                 size = MullionButtonSize.S,
-                contentDescription = "刷新",
-            ) {
-                Text("↻", style = MullionTextStyles.Mono.copy(fontSize = 16.sp), color = MullionColors.Ink)
-            }
+            )
         }
         Spacer(Modifier.width(5.dp))
         Box(
@@ -176,7 +201,7 @@ fun SectionHeading(
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {
             if (kicker != null) {
-                Lab(kicker, color = MullionColors.Volt, size = 9)
+                RefLabel(kicker, color = MullionColors.Volt, size = 9)
                 Spacer(Modifier.height(3.dp))
             }
             Text(
@@ -203,7 +228,7 @@ fun StatusChip(status: DeviceStatus) {
     val color = statusColor(status)
     Text(
         text = status.label,
-        style = MullionTextStyles.MonoSmall.copy(fontSize = 9.sp),
+        style = MullionTextStyles.UISmall.copy(fontSize = 9.sp),
         color = color,
         modifier = Modifier
             .clip(CircleShape)
@@ -218,7 +243,7 @@ fun SeverityChip(severity: AlertSeverity) {
     val color = severityColor(severity)
     Text(
         text = severity.label,
-        style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+        style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
         color = color,
         modifier = Modifier
             .clip(CircleShape)
@@ -227,18 +252,21 @@ fun SeverityChip(severity: AlertSeverity) {
     )
 }
 
+@Composable
 fun statusColor(status: DeviceStatus) = when (status) {
     DeviceStatus.Online -> MullionColors.Mint
     DeviceStatus.Warning -> MullionColors.Amber
     DeviceStatus.Offline -> MullionColors.Faint
 }
 
+@Composable
 fun severityColor(severity: AlertSeverity) = when (severity) {
     AlertSeverity.Critical -> MullionColors.Signal
     AlertSeverity.Warning -> MullionColors.Amber
     AlertSeverity.Info -> MullionColors.Volt
 }
 
+@Composable
 fun activityColor(kind: ActivityKind) = when (kind) {
     ActivityKind.Online -> MullionColors.Mint
     ActivityKind.Offline -> MullionColors.Faint
@@ -257,14 +285,14 @@ fun MetricTile(
 ) {
     Column(
         modifier = modifier
-            .glass(shape = RoundedCornerShape(16.dp), level = GlassLevel.Panel)
+            .appSurface(shape = RoundedCornerShape(16.dp))
             .padding(horizontal = 16.dp, vertical = 14.dp),
     ) {
-        Lab(label, size = 8, color = if (accent) MullionColors.Volt else MullionColors.Faint)
+        RefLabel(label, size = 8, color = if (accent) MullionColors.Volt else MullionColors.Faint)
         Spacer(Modifier.height(7.dp))
         Text(
             text = value,
-            style = MullionTextStyles.Mono.copy(
+            style = MullionTextStyles.UI.copy(
                 fontSize = 23.sp,
                 fontWeight = FontWeight.SemiBold,
             ),
@@ -273,7 +301,7 @@ fun MetricTile(
         Spacer(Modifier.height(4.dp))
         Text(
             text = caption,
-            style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+            style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
             color = MullionColors.Faint,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -291,13 +319,13 @@ fun InfoRow(key: String, value: String) {
     ) {
         Text(
             text = key,
-            style = MullionTextStyles.MonoSmall.copy(fontSize = 9.5.sp),
+            style = MullionTextStyles.UISmall.copy(fontSize = 9.5.sp),
             color = MullionColors.Faint,
             modifier = Modifier.width(96.dp),
         )
         Text(
             text = value,
-            style = MullionTextStyles.MonoSmall.copy(fontSize = 10.5.sp),
+            style = MullionTextStyles.UISmall.copy(fontSize = 10.5.sp),
             color = MullionColors.Ink,
             modifier = Modifier.weight(1f),
         )
@@ -315,13 +343,13 @@ fun MetricBar(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = label,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 9.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 9.sp),
                 color = MullionColors.Faint,
                 modifier = Modifier.weight(1f),
             )
             Text(
                 text = "$value$unit",
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 9.5.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 9.5.sp),
                 color = when {
                     value >= 80 -> MullionColors.Signal
                     value >= 65 -> MullionColors.Amber
@@ -408,6 +436,7 @@ fun Sparkline(
     modifier: Modifier = Modifier,
     color: androidx.compose.ui.graphics.Color = MullionColors.Volt,
 ) {
+    val edge = MullionColors.Edge
     Canvas(modifier = modifier) {
         if (values.size < 2) return@Canvas
         val max = values.maxOrNull()?.coerceAtLeast(1f) ?: 1f
@@ -426,7 +455,7 @@ fun Sparkline(
             style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round),
         )
         drawLine(
-            color = MullionColors.Edge.copy(alpha = 0.4f),
+            color = edge.copy(alpha = 0.4f),
             start = Offset(0f, size.height * 0.9f),
             end = Offset(size.width, size.height * 0.9f),
             strokeWidth = 1f,
@@ -453,12 +482,12 @@ fun EmptyState(
                 .border(1.dp, MullionColors.Volt.copy(alpha = 0.35f), CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            Text("⌁", style = MullionTextStyles.Mono.copy(fontSize = 18.sp), color = MullionColors.Volt)
+            Text("⌁", style = MullionTextStyles.UI.copy(fontSize = 18.sp), color = MullionColors.Volt)
         }
         Spacer(Modifier.height(12.dp))
         Text(
             text = title,
-            style = MullionTextStyles.Mono.copy(fontSize = 13.sp, fontWeight = FontWeight.Bold),
+            style = MullionTextStyles.UI.copy(fontSize = 13.sp, fontWeight = FontWeight.Bold),
             color = MullionColors.Ink,
         )
         Spacer(Modifier.height(4.dp))
@@ -474,7 +503,7 @@ fun ReferenceSection(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .glass(shape = RoundedCornerShape(20.dp), level = GlassLevel.Panel)
+            .appSurface(shape = RoundedCornerShape(20.dp))
             .padding(18.dp),
         content = content,
     )
@@ -493,12 +522,12 @@ fun DrawerHeader(state: ReferenceUiState) {
         Column {
             Text(
                 text = "MULLION",
-                style = MullionTextStyles.Mono.copy(fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.5.sp),
+                style = MullionTextStyles.UI.copy(fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.5.sp),
                 color = MullionColors.Ink,
             )
             Text(
                 text = state.siteName,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                 color = MullionColors.Faint,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

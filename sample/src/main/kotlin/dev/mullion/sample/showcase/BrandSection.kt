@@ -88,14 +88,14 @@ fun HeroSection() {
             Text(
                 text = "MULLION",
                 style = TextStyle(
-                    fontFamily = MullionFonts.Mono,
+                    fontFamily = MullionFonts.Sans,
                     fontWeight = FontWeight.Bold,
                     fontSize = if (compact) 42.sp else 60.sp,
                     letterSpacing = (-1.5).sp,
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            Color.White,
-                            Color(0xFFBFEFFA),
+                            MullionColors.Ink,
+                            MullionColors.VoltHigh,
                             MullionColors.Volt,
                         ),
                     ),
@@ -137,7 +137,7 @@ fun HeroSection() {
                 Text(
                     text = "implementation(\"dev.mullion:core:1.0.0\")",
                     style = MullionTextStyles.Mono.copy(fontSize = 9.5.sp),
-                    color = Color(0xFFC3E88D),
+                    color = MullionColors.Mint,
                     softWrap = false,
                     maxLines = 1,
                 )
@@ -180,8 +180,8 @@ fun ClaimSection() {
                 letterSpacing = (-0.6).sp,
                 brush = Brush.linearGradient(
                     listOf(
-                        Color.White,
-                        Color(0xFFBFEFFA),
+                        MullionColors.Ink,
+                        MullionColors.VoltHigh,
                         MullionColors.Volt,
                     ),
                 ),
@@ -348,12 +348,15 @@ fun BreakpointRail() {
         }
         Spacer(Modifier.height(8.dp))
 
+        val edgeHigh = MullionColors.EdgeHigh
+        val volt = MullionColors.Volt
+        val signal = MullionColors.Signal
         BoxWithConstraints(modifier = Modifier.fillMaxWidth().height(64.dp)) {
             val track = maxWidth - 20.dp
             Canvas(modifier = Modifier.fillMaxWidth().height(40.dp)) {
                 val y = size.height - 8.dp.toPx()
                 drawLine(
-                    color = MullionColors.EdgeHigh,
+                    color = edgeHigh,
                     start = Offset(10.dp.toPx(), y),
                     end = Offset(size.width - 10.dp.toPx(), y),
                     strokeWidth = 1.dp.toPx(),
@@ -363,7 +366,7 @@ fun BreakpointRail() {
                         ((tick - 320) / 880f)
                     val active = tick == window.bp.baselineWidthDp
                     drawLine(
-                        color = if (active) MullionColors.Volt else MullionColors.Signal,
+                        color = if (active) volt else signal,
                         start = Offset(x, y - 7.dp.toPx()),
                         end = Offset(x, y + 4.dp.toPx()),
                         strokeWidth = if (active) 2.dp.toPx() else 1.dp.toPx(),
@@ -371,12 +374,12 @@ fun BreakpointRail() {
                 }
                 val markerX = 10.dp.toPx() + (size.width - 20.dp.toPx()) * fraction
                 drawCircle(
-                    color = MullionColors.Volt,
+                    color = volt,
                     radius = 4.dp.toPx(),
                     center = Offset(markerX, y),
                 )
                 drawCircle(
-                    color = MullionColors.Volt.copy(alpha = 0.2f),
+                    color = volt.copy(alpha = 0.2f),
                     radius = 9.dp.toPx(),
                     center = Offset(markerX, y),
                 )
@@ -561,12 +564,12 @@ fun FooterSection() {
                     Text(
                         text = "MULLION",
                         style = TextStyle(
-                            fontFamily = MullionFonts.Mono,
+                            fontFamily = MullionFonts.Sans,
                             fontWeight = FontWeight.Bold,
                             fontSize = 42.sp,
                             letterSpacing = (-1).sp,
                             brush = Brush.linearGradient(
-                                listOf(Color.White, MullionColors.Volt),
+                                listOf(MullionColors.Ink, MullionColors.Volt),
                             ),
                         ),
                     )

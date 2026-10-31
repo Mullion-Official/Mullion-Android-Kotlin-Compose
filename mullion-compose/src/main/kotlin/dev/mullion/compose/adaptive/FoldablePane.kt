@@ -116,17 +116,18 @@ private fun HingeStrip(
     seamDp: Dp,
     gapDp: Dp,
 ) {
+    val signal = MullionColors.Signal
     Canvas(modifier = modifier) {
         val dash = PathEffect.dashPathEffect(floatArrayOf(7.dp.toPx(), 7.dp.toPx()))
         if (horizontal) {
             val y = size.height / 2f
             drawRect(
-                color = MullionColors.Signal.copy(alpha = 0.06f),
+                color = signal.copy(alpha = 0.06f),
                 topLeft = Offset(0f, y - seamDp.toPx() / 2f),
                 size = androidx.compose.ui.geometry.Size(size.width, seamDp.toPx()),
             )
             drawLine(
-                color = MullionColors.Signal.copy(alpha = 0.72f),
+                color = signal.copy(alpha = 0.72f),
                 start = Offset(0f, y),
                 end = Offset(size.width, y),
                 strokeWidth = 1.5.dp.toPx(),
@@ -135,12 +136,12 @@ private fun HingeStrip(
         } else {
             val x = size.width / 2f
             drawRect(
-                color = MullionColors.Signal.copy(alpha = 0.06f),
+                color = signal.copy(alpha = 0.06f),
                 topLeft = Offset(x - seamDp.toPx() / 2f, 0f),
                 size = androidx.compose.ui.geometry.Size(seamDp.toPx(), size.height),
             )
             drawLine(
-                color = MullionColors.Signal.copy(alpha = 0.72f),
+                color = signal.copy(alpha = 0.72f),
                 start = Offset(x, 0f),
                 end = Offset(x, size.height),
                 strokeWidth = 1.5.dp.toPx(),

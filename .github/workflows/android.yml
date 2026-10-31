@@ -39,8 +39,12 @@ jobs:
       - name: Make wrapper executable
         run: chmod +x ./gradlew
 
-      - name: Unit tests (pure core)
-        run: ./gradlew :mullion-core:testDebugUnitTest --stacktrace
+      - name: Unit tests (core + sample)
+        run: >
+          ./gradlew
+          :mullion-core:testDebugUnitTest
+          :sample:testDebugUnitTest
+          --stacktrace
 
       - name: Assemble libraries and sample
         run: >

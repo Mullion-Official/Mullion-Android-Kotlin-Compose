@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="mullion_background">#F5F7FA</color>
+    <color name="mullion_background_lift">#FFFFFF</color>
+    <color name="mullion_background_deep">#E9EEF4</color>
+    <color name="mullion_volt">#2563EB</color>
+    <color name="mullion_volt_high">#60A5FA</color>
+    <color name="mullion_signal">#D9534F</color>
+    <color name="mullion_mint">#0E9F6E</color>
+    <color name="mullion_amber">#B45309</color>
+    <color name="mullion_ink">#111827</color>
+    <color name="mullion_muted">#4B5563</color>
+    <color name="mullion_faint">#8A94A3</color>
+    <color name="mullion_on_volt">#FFFFFF</color>
+    <color name="mullion_edge">#140F172A</color>
+    <color name="mullion_edge_high">#29111827</color>
+    <color name="mullion_tonal">#0A0F172A</color>
+    <color name="mullion_glass_tint">#0F172A</color>
+</resources>

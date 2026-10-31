@@ -4,36 +4,63 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-private val MullionColorScheme = darkColorScheme(
-    primary = MullionColors.Volt,
-    onPrimary = MullionColors.OnVolt,
-    primaryContainer = MullionColors.Volt.copy(alpha = 0.18f),
-    onPrimaryContainer = MullionColors.VoltHigh,
-    secondary = MullionColors.Mint,
-    onSecondary = MullionColors.OnVolt,
-    tertiary = MullionColors.Amber,
-    onTertiary = MullionColors.OnVolt,
-    background = MullionColors.Background,
-    onBackground = MullionColors.Ink,
-    surface = MullionColors.BackgroundLift,
-    onSurface = MullionColors.Ink,
-    surfaceVariant = MullionColors.Tonal,
-    onSurfaceVariant = MullionColors.Muted,
-    outline = MullionColors.EdgeHigh,
-    outlineVariant = MullionColors.Edge,
-    error = MullionColors.Signal,
-    onError = MullionColors.OnVolt,
-    scrim = MullionColors.Scrim,
-)
+private fun MullionPalette.toColorScheme(dark: Boolean) = if (dark) {
+    darkColorScheme(
+        primary = volt,
+        onPrimary = onVolt,
+        primaryContainer = volt.copy(alpha = 0.18f),
+        onPrimaryContainer = voltHigh,
+        secondary = mint,
+        onSecondary = onVolt,
+        tertiary = amber,
+        onTertiary = onVolt,
+        background = background,
+        onBackground = ink,
+        surface = backgroundLift,
+        onSurface = ink,
+        surfaceVariant = backgroundDeep,
+        onSurfaceVariant = muted,
+        outline = edgeHigh,
+        outlineVariant = edge,
+        error = signal,
+        onError = onVolt,
+        scrim = scrim,
+    )
+} else {
+    lightColorScheme(
+        primary = volt,
+        onPrimary = onVolt,
+        primaryContainer = volt.copy(alpha = 0.10f),
+        onPrimaryContainer = volt,
+        secondary = mint,
+        onSecondary = Color.White,
+        tertiary = amber,
+        onTertiary = Color.White,
+        background = background,
+        onBackground = ink,
+        surface = backgroundLift,
+        onSurface = ink,
+        surfaceVariant = backgroundDeep,
+        onSurfaceVariant = muted,
+        outline = edgeHigh,
+        outlineVariant = edge,
+        error = signal,
+        onError = Color.White,
+        scrim = scrim,
+    )
+}
 
 private val MullionShapes = Shapes(
     extraSmall = RoundedCornerShape(6.dp),
@@ -71,8 +98,8 @@ private val MullionTypography = Typography(
         lineHeight = 30.sp,
     ),
     titleLarge = TextStyle(
-        fontFamily = MullionFonts.Mono,
-        fontWeight = FontWeight.Bold,
+        fontFamily = MullionFonts.Sans,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp,
         lineHeight = 28.sp,
         letterSpacing = (-0.2).sp,
@@ -85,12 +112,12 @@ private val MullionTypography = Typography(
     ),
     bodyLarge = MullionTextStyles.BodyLarge,
     bodyMedium = MullionTextStyles.Body,
-    bodySmall = MullionTextStyles.MonoSmall,
+    bodySmall = MullionTextStyles.UISmall,
     labelLarge = TextStyle(
-        fontFamily = MullionFonts.Mono,
-        fontWeight = FontWeight.SemiBold,
+        fontFamily = MullionFonts.Sans,
+        fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
-        letterSpacing = 0.6.sp,
+        letterSpacing = 0.1.sp,
     ),
     labelMedium = MullionTextStyles.Label,
     labelSmall = MullionTextStyles.LabelSmall,
@@ -100,18 +127,25 @@ public val LocalMullionDimens: androidx.compose.runtime.ProvidableCompositionLoc
     staticCompositionLocalOf { MullionDimens.Default }
 
 /**
- * Applies the MULLION color scheme, type scale, shapes and glass tokens.
+ * Applies the MULLION adaptive color scheme, type scale, shapes and glass tokens.
  *
- * The theme is intentionally a single dark mode: glass only reads as glass over
- * a deep, saturated background. A light theme is on the roadmap.
+ * The default follows the system. Pass [darkTheme] explicitly for a kiosk, a
+ * design preview or a screenshot test. Every component reads
+ * [LocalMullionPalette] through [MullionColors], so a split-screen window can
+ * change theme without rebuilding component code.
  */
 @Composable
 public fun MullionTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    CompositionLocalProvider(LocalMullionDimens provides MullionDimens.Default) {
+    val palette = if (darkTheme) DarkMullionPalette else LightMullionPalette
+    CompositionLocalProvider(
+        LocalMullionDimens provides MullionDimens.Default,
+        LocalMullionPalette provides palette,
+    ) {
         MaterialTheme(
-            colorScheme = MullionColorScheme,
+            colorScheme = palette.toColorScheme(darkTheme),
             typography = MullionTypography,
             shapes = MullionShapes,
             content = content,

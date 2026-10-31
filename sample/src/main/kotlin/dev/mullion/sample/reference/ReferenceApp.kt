@@ -16,8 +16,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Dashboard
+import androidx.compose.material.icons.outlined.Devices
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,13 +57,9 @@ import dev.mullion.compose.base.MullionButtonSize
 import dev.mullion.compose.base.MullionButtonVariant
 import dev.mullion.compose.base.MullionSnackbarHost
 import dev.mullion.compose.base.rememberMullionSnackbarHostState
-import dev.mullion.compose.theme.GlassLevel
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.theme.MullionTextStyles
-import dev.mullion.compose.theme.glass
 import dev.mullion.sample.CabinetActivity
-import dev.mullion.sample.ui.Lab
-import dev.mullion.sample.ui.SampleBackdrop
 import dev.mullion.sample.ui.SampleBody
 
 /**
@@ -110,6 +114,12 @@ fun ReferenceApp() {
         OrbitNavItem(RefScreen.Activity.label),
         OrbitNavItem(RefScreen.Settings.label),
     )
+    val navIcons = listOf(
+        Icons.Outlined.Dashboard,
+        Icons.Outlined.Devices,
+        Icons.Outlined.History,
+        Icons.Outlined.Settings,
+    )
     val nav: @Composable () -> Unit = {
         OrbitNav(
             items = navItems,
@@ -118,14 +128,27 @@ fun ReferenceApp() {
                 screenName = RefScreen.entries[index].name
             },
             header = { DrawerHeader(state) },
+            icon = { index, selected ->
+                Icon(
+                    imageVector = navIcons[index],
+                    contentDescription = null,
+                    tint = if (selected) MullionColors.Volt else MullionColors.Muted,
+                    modifier = Modifier.size(20.dp),
+                )
+            },
         )
     }
 
     Box(modifier = Modifier.fillMaxSize().background(MullionColors.Background)) {
-        SampleBackdrop()
-        EdgeToEdgeBox { _ ->
+        EdgeToEdgeBox(applyPadding = false) { insets ->
             Box(Modifier.fillMaxSize()) {
                 AdaptiveScaffold(
+                    bottomBarInset = insets.calculateBottomPadding() + 16.dp,
+                    modifier = Modifier.padding(
+                        start = insets.calculateLeftPadding(androidx.compose.ui.platform.LocalLayoutDirection.current),
+                        top = insets.calculateTopPadding(),
+                        end = insets.calculateRightPadding(androidx.compose.ui.platform.LocalLayoutDirection.current),
+                    ),
                     topBar = {
                         ReferenceTopBar(
                             screen = screen,
@@ -194,18 +217,21 @@ fun ReferenceApp() {
                     },
                 )
 
-                MullionSnackbarHost(state = snackbar)
+                MullionSnackbarHost(
+                    state = snackbar,
+                    modifier = Modifier.padding(bottom = insets.calculateBottomPadding() + 16.dp),
+                )
 
                 val restartTarget = state.restartTarget
                 AdaptiveDialog(
                     visible = restartTarget != null,
                     onDismissRequest = viewModel::dismissRestartDialog,
                 ) {
-                    Lab("REMOTE ACTION", color = MullionColors.Signal)
+                    RefLabel("远程操作", color = MullionColors.Signal)
                     Spacer(Modifier.height(6.dp))
                     Text(
                         text = "重启「${restartTarget?.name ?: "设备"}」？",
-                        style = MullionTextStyles.Mono.copy(
+                        style = MullionTextStyles.UI.copy(
                             fontSize = 17.sp,
                             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                         ),

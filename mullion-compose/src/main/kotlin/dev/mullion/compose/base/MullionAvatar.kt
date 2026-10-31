@@ -56,7 +56,7 @@ public fun MullionAvatar(
             .size(size.size)
             .clip(CircleShape)
             .background(Brush.linearGradient(palette), CircleShape)
-            .border(1.dp, Color.White.copy(alpha = 0.22f), CircleShape),
+            .border(1.dp, MullionColors.EdgeHigh, CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         if (image != null) {
@@ -65,7 +65,7 @@ public fun MullionAvatar(
             Text(
                 text = initials(name),
                 style = androidx.compose.ui.text.TextStyle(
-                    fontFamily = MullionFonts.Mono,
+                    fontFamily = MullionFonts.Sans,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = size.fontSize,
                 ),
@@ -120,7 +120,7 @@ public fun MullionAvatarStack(
                 Text(
                     text = "+$hidden",
                     style = androidx.compose.ui.text.TextStyle(
-                        fontFamily = MullionFonts.Mono,
+                        fontFamily = MullionFonts.Sans,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = (size.fontSize.value * 0.8f).sp,
                     ),

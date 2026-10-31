@@ -175,7 +175,7 @@ public fun PermissionSheet(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = title.uppercase(),
+                        text = title,
                         style = MullionTextStyles.Label,
                         color = MullionColors.Volt,
                     )
@@ -189,7 +189,7 @@ public fun PermissionSheet(
                     ) {
                         Text(
                             text = "×",
-                            style = MullionTextStyles.Mono,
+                            style = MullionTextStyles.UI,
                             color = MullionColors.Muted,
                         )
                     }
@@ -242,13 +242,13 @@ private fun PermissionRow(permission: MullionPermission) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = permission.label,
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 11.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 11.sp),
                     color = MullionColors.Ink,
                 )
                 if (permission.required) {
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        text = "REQUIRED",
+                        text = "必需",
                         style = MullionTextStyles.LabelSmall.copy(fontSize = 8.sp),
                         color = MullionColors.Amber,
                     )
@@ -256,13 +256,13 @@ private fun PermissionRow(permission: MullionPermission) {
             }
             Text(
                 text = permission.permission,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 9.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 9.sp),
                 color = MullionColors.Faint,
             )
             if (permission.rationale != null) {
                 Text(
                     text = permission.rationale,
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 9.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 9.sp),
                     color = MullionColors.Muted,
                 )
             }
@@ -304,7 +304,7 @@ private fun SheetActionButton(
         ) {
             Text(
                 text = label,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 10.5.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 10.5.sp),
                 color = if (primary) MullionColors.OnVolt else MullionColors.Ink,
             )
         }

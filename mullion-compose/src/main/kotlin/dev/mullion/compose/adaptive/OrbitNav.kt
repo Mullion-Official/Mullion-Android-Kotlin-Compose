@@ -120,6 +120,10 @@ private fun BottomBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(
+                color = MullionColors.BackgroundLift.copy(alpha = 0.78f),
+                shape = RoundedCornerShape(24.dp),
+            )
             .glass(shape = RoundedCornerShape(24.dp), level = GlassLevel.Floating)
             .padding(6.dp)
             .selectableGroup(),
@@ -164,7 +168,7 @@ private fun BottomBar(
                 }
                 Text(
                     text = item.label,
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 9.5.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 9.5.sp),
                     color = if (selected) MullionColors.Ink else MullionColors.Muted,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -223,7 +227,7 @@ private fun Rail(
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = item.label,
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 9.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 9.sp),
                     color = if (selected) MullionColors.Volt else MullionColors.Muted,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -280,7 +284,7 @@ private fun Drawer(
                 }
                 Text(
                     text = item.label,
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 11.sp),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 11.sp),
                     color = if (selected) MullionColors.Volt else MullionColors.Muted,
                     modifier = Modifier.weight(1f),
                     maxLines = 1,
@@ -289,7 +293,7 @@ private fun Drawer(
                 if (item.badge != null) {
                     Text(
                         text = item.badge,
-                        style = MullionTextStyles.MonoSmall.copy(
+                        style = MullionTextStyles.UISmall.copy(
                             fontSize = 9.sp,
                             fontWeight = FontWeight.Bold,
                         ),
@@ -327,7 +331,7 @@ private fun OrbitMark(
     ) {
         Text(
             text = label.take(1).uppercase(),
-            style = MullionTextStyles.MonoSmall.copy(
+            style = MullionTextStyles.UISmall.copy(
                 fontSize = (size.value * 0.42f).sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = MullionFonts.Mono,

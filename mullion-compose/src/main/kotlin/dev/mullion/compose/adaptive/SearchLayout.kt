@@ -85,7 +85,7 @@ public fun MullionSearchBar(
                 if (value.isEmpty()) {
                     Text(
                         text = placeholder,
-                        style = MullionTextStyles.MonoSmall.copy(fontSize = 11.sp),
+                        style = MullionTextStyles.UISmall.copy(fontSize = 11.sp),
                         color = MullionColors.Faint,
                         maxLines = 1,
                     )
@@ -94,7 +94,7 @@ public fun MullionSearchBar(
                     value = value,
                     onValueChange = onValueChange,
                     modifier = Modifier.fillMaxWidth(),
-                    textStyle = MullionTextStyles.Mono.copy(fontSize = 12.sp),
+                    textStyle = MullionTextStyles.UI.copy(fontSize = 12.sp),
                     singleLine = true,
                     cursorBrush = SolidColor(MullionColors.Volt),
                     interactionSource = interaction,
@@ -118,7 +118,7 @@ public fun MullionSearchBar(
                 ) {
                     Text(
                         text = "×",
-                        style = MullionTextStyles.Mono,
+                        style = MullionTextStyles.UI,
                         color = MullionColors.Muted,
                     )
                 }
@@ -129,15 +129,16 @@ public fun MullionSearchBar(
 
 @Composable
 private fun SearchGlyph() {
+    val muted = MullionColors.Muted
     Canvas(modifier = Modifier.size(15.dp)) {
         drawCircle(
-            color = MullionColors.Muted,
+            color = muted,
             radius = size.minDimension * 0.32f,
             center = Offset(size.width * 0.42f, size.height * 0.42f),
             style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.6.dp.toPx()),
         )
         drawLine(
-            color = MullionColors.Muted,
+            color = muted,
             start = Offset(size.width * 0.64f, size.height * 0.64f),
             end = Offset(size.width * 0.9f, size.height * 0.9f),
             strokeWidth = 1.6.dp.toPx(),

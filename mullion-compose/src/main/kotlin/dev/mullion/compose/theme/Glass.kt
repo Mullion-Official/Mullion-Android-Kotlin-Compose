@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.composed
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -82,29 +83,35 @@ public enum class GlassLevel(
 public fun Modifier.glass(
     shape: Shape = RoundedCornerShape(GlassLevel.Panel.radius),
     level: GlassLevel = GlassLevel.Panel,
-    borderColor: Color = Color.White.copy(alpha = level.borderAlpha),
-): Modifier = this
-    .clip(shape)
-    .background(
-        Brush.verticalGradient(
-            colors = listOf(
-                Color.White.copy(alpha = level.topAlpha),
-                Color.White.copy(alpha = level.midAlpha),
-                Color.White.copy(alpha = level.bottomAlpha),
+    borderColor: Color? = null,
+): Modifier = composed {
+    val palette = LocalMullionPalette.current
+    val tint = palette.glassTint
+    val scale = palette.glassAlphaScale
+    val resolvedBorder = borderColor ?: tint.copy(alpha = level.borderAlpha * scale)
+    this
+        .clip(shape)
+        .background(
+            Brush.verticalGradient(
+                colors = listOf(
+                    tint.copy(alpha = level.topAlpha * scale),
+                    tint.copy(alpha = level.midAlpha * scale),
+                    tint.copy(alpha = level.bottomAlpha * scale),
+                ),
             ),
-        ),
-    )
-    .border(1.dp, borderColor, shape)
-    .drawWithContent {
-        drawContent()
-        // A single hairline along the top edge sells the glass.
-        drawLine(
-            color = Color.White.copy(alpha = 0.22f),
-            start = androidx.compose.ui.geometry.Offset(shapePadding(), 0f),
-            end = androidx.compose.ui.geometry.Offset(size.width - shapePadding(), 0f),
-            strokeWidth = 1f,
         )
-    }
+        .border(1.dp, resolvedBorder, shape)
+        .drawWithContent {
+            drawContent()
+            // A single hairline along the top edge sells the glass, even in light mode.
+            drawLine(
+                color = tint.copy(alpha = 0.10f * scale),
+                start = androidx.compose.ui.geometry.Offset(shapePadding(), 0f),
+                end = androidx.compose.ui.geometry.Offset(size.width - shapePadding(), 0f),
+                strokeWidth = 1f,
+            )
+        }
+}
 
 private fun shapePadding(): Float = 0f
 

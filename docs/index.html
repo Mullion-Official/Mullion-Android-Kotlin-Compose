@@ -131,14 +131,14 @@ footer{padding:80px 0 44px;border-top:1px solid rgba(255,255,255,.06);margin-top
       </svg>
       MULLION
     </a>
-    <div class="chip" style="margin-left:4px"><span class="dot"></span>26 / 26 modules</div>
+    <div class="chip" style="margin-left:4px"><span class="dot"></span>26 / 26 modules · light / dark</div>
     <nav>
       <a href="showcase.html">Design cabinet</a>
       <a href="testing.md">Verification</a>
-      <a href="https://github.com/mullion-android/mullion/blob/main/docs/breakpoints.md">Breakpoints</a>
-      <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md">Components</a>
-      <a href="https://github.com/mullion-android/mullion/blob/main/docs/architecture.md">Architecture</a>
-      <a class="repo" href="https://github.com/mullion-android/mullion">GitHub ↗</a>
+      <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/breakpoints.md">Breakpoints</a>
+      <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md">Components</a>
+      <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/architecture.md">Architecture</a>
+      <a class="repo" href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose">GitHub ↗</a>
     </nav>
   </div>
 </header>
@@ -154,7 +154,7 @@ footer{padding:80px 0 44px;border-top:1px solid rgba(255,255,255,.06);margin-top
       <h1>一樘窗如何分格，<br>由窗棂决定。</h1>
       <p class="lead">Mullion 是把一扇大窗分成若干玻璃格的结构件——它不发光、不抢眼，却决定了窗格如何排布、如何收束、如何避让铰链。组件库之于应用界面，正是这根窗棂：320dp 到 1200dp 之间，一切分格由它定。</p>
       <div class="cta">
-        <a class="btn fill" href="https://github.com/mullion-android/mullion">Clone / source ↗</a>
+        <a class="btn fill" href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose">Clone / source ↗</a>
         <a class="btn ghost" href="showcase.html">Open the design cabinet</a>
       </div>
       <div class="codeline">implementation("dev.mullion:compose:1.0.0")</div>
@@ -186,7 +186,7 @@ footer{padding:80px 0 44px;border-top:1px solid rgba(255,255,255,.06);margin-top
       <div class="card"><div class="num">02 / STRUCTURE</div><h3>导航与栏数一起决定</h3><p>BottomBar → Rail → Drawer；1 → 2 → 3 栏。所有屏共享同一份 PaneStrategy，切换宽度时业务状态不重建。</p></div>
       <div class="card"><div class="num">03 / HINGE</div><h3>铰链是几何，不是装饰</h3><p>竖缝两侧各留 24dp 安全距离，面板永不跨缝。FoldablePane 在窗格不足时退回单栏，而不是把内容挤碎。</p></div>
       <div class="card"><div class="num">04 / TWO TIERS</div><h3>Compose 与 View 同尺</h3><p>mullion-compose 提供 26 个组件；mullion-view 提供 BreakpointLayout、PaneLayout、GlassView 与 ResourceScaler。断点规则共用 mullion-core。</p></div>
-      <div class="card"><div class="num">05 / TOKENS</div><h3>玻璃是一套可复现的配方</h3><p>三层渐变、1dp 亮边、深色环境阴影；blur 深度即层级。颜色、圆角、时长、命中区域都由 token 定义。</p></div>
+      <div class="card"><div class="num">05 / TOKENS</div><h3>玻璃是一套可复现的配方</h3><p>三层渐变、1dp 亮边、主题化 tint；浅色与深色各一套 semantic token。颜色、圆角、时长、命中区域都由 token 定义。</p></div>
       <div class="card"><div class="num">06 / OPEN</div><h3>Apache-2.0 · 可发布</h3><p>三个模块都配置了 MavenPublication 与 sources jar。把它接进现有工程，或从源码开始改。</p></div>
     </div>
   </section>
@@ -216,35 +216,35 @@ footer{padding:80px 0 44px;border-top:1px solid rgba(255,255,255,.06);margin-top
     <div class="modules">
       <div class="mlist">
         <h3>Adaptive Kit / 01–14</h3>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>01</i>AdaptiveScaffold</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>02</i>DockedSheet</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>03</i>OrbitNav</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>04</i>SizeClassText</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>05</i>SearchLayout</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>06</i>MultiPane</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>07</i>AdaptiveDialog</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>08</i>ResourceScaler</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>09</i>EdgeToEdgeBox</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>10</i>DraggableDivider</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>11</i>WindowSizeClass</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>12</i>FoldablePane</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>13</i>SharedAxisTransition</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>14</i>PermissionSheet</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>01</i>AdaptiveScaffold</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>02</i>DockedSheet</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>03</i>OrbitNav</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>04</i>SizeClassText</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>05</i>SearchLayout</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>06</i>MultiPane</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>07</i>AdaptiveDialog</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>08</i>ResourceScaler</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>09</i>EdgeToEdgeBox</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>10</i>DraggableDivider</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>11</i>WindowSizeClass</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>12</i>FoldablePane</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>13</i>SharedAxisTransition</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#adaptive-kit-0114"><i>14</i>PermissionSheet</a>
       </div>
       <div class="mlist">
         <h3>Base Kit / 15–26</h3>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>15</i>Button</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>16</i>TextField</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>17</i>ProgressBar</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>18</i>Checkbox &amp; Radio</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>19</i>Switch</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>20</i>Slider</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>21</i>SegmentedControl</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>22</i>Badge</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>23</i>Avatar</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>24</i>Card</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>25</i>Tabs</a>
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>26</i>Snackbar</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#base-kit-1526"><i>15</i>Button</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#base-kit-1526"><i>16</i>TextField</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#base-kit-1526"><i>17</i>ProgressBar</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#base-kit-1526"><i>18</i>Checkbox &amp; Radio</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#base-kit-1526"><i>19</i>Switch</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#base-kit-1526"><i>20</i>Slider</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#base-kit-1526"><i>21</i>SegmentedControl</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#base-kit-1526"><i>22</i>Badge</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#base-kit-1526"><i>23</i>Avatar</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#base-kit-1526"><i>24</i>Card</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#base-kit-1526"><i>25</i>Tabs</a>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md#base-kit-1526"><i>26</i>Snackbar</a>
       </div>
     </div>
   </section>
@@ -306,10 +306,10 @@ footer{padding:80px 0 44px;border-top:1px solid rgba(255,255,255,.06);margin-top
         <div class="sub">One window. Every pane. / 一樘窗，处处合缝。<br>26 modules · Apache-2.0 · minSdk 21 · dev.mullion:core / compose / view</div>
       </div>
       <div class="sub" style="text-align:right">
-        <a href="https://github.com/mullion-android/mullion">GitHub</a> ·
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose">GitHub</a> ·
         <a href="showcase.html">Design cabinet</a>
       <a href="testing.md">Verification</a> ·
-        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md">Components</a><br>
+        <a href="https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/docs/components.md">Components</a><br>
         <span class="faint">Brand &amp; layout specs: 布局.html / 组件.html</span>
       </div>
     </div>

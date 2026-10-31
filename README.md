@@ -19,6 +19,7 @@ MULLION 是一个开源的 **Android 原生自适应组件框架**。它不是�
 - **Compose + View 双端**：`mullion-compose` 26 个组件；`mullion-view` 提供可混入既有 XML 工程的布局与玻璃 View。
 - **5 档宽度类**：320 / 480 / 600 / 840 / 1200 dp，同一份判定驱动导航、栏数、资源桶与字阶。
 - **折叠屏是几何**：`DockedSheet` 永不跨缝，`FoldablePane` 在窗格不足时退回单栏；`MultiPane` 还会在内容宽度不足时主动收起预览栏。
+- **明暗自适应**：默认跟随系统，组件只读语义 token；Compose 与 View 各有一套 light / night 映射，不靠 `if (dark)` 散落在业务里。
 - **真实工程示范**：`DeviceRepository` + `ViewModel` + `StateFlow`，含加载态、错误路径、筛选后选择清理、真实 `RequestMultiplePermissions` 流程。
 - **零反射**：断点阈值是 `const`，解析是纯函数；资源桶由 Android configuration 在编译期/配置期选择。
 - **Apache-2.0**：核心、Compose、View 三个模块都可独立发布。
@@ -30,6 +31,7 @@ MULLION 是一个开源的 **Android 原生自适应组件框架**。它不是�
 - [为什么是 MULLION](#为什么是-mullion)
 - [实机预览](#实机预览)
 - [演示视频](#演示视频)
+- [明暗主题](#明暗主题)
 - [参考应用：设备运维控制台](#参考应用设备运维控制台)
 - [快速开始](#快速开始)
 - [一根窗棂：断点表](#一根窗棂断点表)
@@ -67,23 +69,40 @@ bucket      values    values    w600dp     w840dp     w840dp
 
 ## 实机预览
 
-| 手机 · 411dp：工作台 | 折叠屏展开 · 673dp：列表 + 详情 |
+| 浅色 · 手机 411dp | 深色 · 同一界面 |
 | --- | --- |
-| ![Reference workbench on phone](docs/images/ref-workbench.png) | ![Reference devices on fold](docs/images/ref-devices-fold.png) |
+| ![Light reference workbench](docs/images/ref-light-workbench.png) | ![Dark reference workbench](docs/images/ref-dark-workbench.png) |
 
-| 1280dp：列表 + 详情 + 预览 | 设置：真实权限、开关与布局参数 |
+| 折叠屏展开 · 673dp 两栏 | 1280dp · 列表 / 详情 / 预览 |
 | --- | --- |
-| ![Three-pane devices](docs/images/ref-devices-3pane.png) | ![Reference settings](docs/images/ref-settings.png) |
+| ![Light devices on fold](docs/images/ref-light-fold.png) | ![Light three-pane devices](docs/images/ref-light-3pane.png) |
 
-> 以上都是示例 App 在 Android 16 / API 36 模拟器上的真实 Compose 渲染，不是设计稿。411dp 使用 BottomBar，673dp 使用 Rail，914dp 的 Drawer 让内容区变窄时 `MultiPane` 会自动从三栏退回两栏，1280dp 恢复三栏。截图使用 `demo_fullscreen` 演示标志隐藏系统栏，普通启动仍然保留系统栏。
+> 以上都是示例 App 在 Android 16 / API 36 模拟器上的真实 Compose 渲染。浅色与深色由系统切换，同一套组件代码不变；411dp 使用 BottomBar，673dp 使用 Rail，914dp 的 Drawer 让内容区变窄时 `MultiPane` 会自动从三栏退回两栏，1280dp 恢复三栏。截图使用 `demo_fullscreen` 隐藏系统栏，普通启动保留状态栏/导航栏安全区。
+
+## 明暗主题
+
+```kotlin
+// 默认跟随系统（isSystemInDarkTheme）
+MullionTheme {
+    App()
+}
+
+// 设计稿、截图测试或 kiosk 可以固定
+MullionTheme(darkTheme = false) { App() }
+```
+
+- Compose 侧：`MullionPalette` + `LocalMullionPalette`，`MullionColors` 保留为可组合 token 门面；亮/暗两套 semantic token 同步切换。
+- View 侧：`values/colors.xml` 与 `values-night/colors.xml`，`MullionPalette.of(context)`；`MullionGlassLayout` / `MullionButtonView` 在配置变化时重建渐变与文字色。
+- 玻璃配方也随主题切换 tint：浅色用低透明度深色玻璃，深色用白色玻璃，不再假设“组件只存在于黑底”。
+- 示例 App 的设置页会显示“浅色 / 深色 · 跟随系统”，并已验证系统切换时即时换肤。
 
 ## 演示视频
 
 [![MULLION reference demo cover](docs/media/mullion-cover.png)](docs/media/mullion-demo.mp4)
 
-**[▶ 观看 / 下载 64 秒演示片](docs/media/mullion-demo.mp4)** · 1080×1920 · 30fps · H.264 · 无音轨（方便你在抖音里配乐）
+**[▶ 观看 / 下载 47 秒演示片](docs/media/mullion-demo.mp4)** · 1080×1920 · 30fps · H.264 · 无音轨（方便你在抖音里配乐）
 
-镜头：设备工作台 → 告警跳转 → 指标 / 日志 → 远程重启确认 → 权限申请 → 筛选设备 → 设置。画面来自真机模拟器上的参考应用，不是组件静态图；组件柜从设置页进入。
+镜头：浅色工作台 → 设备详情 → 指标 / 日志 → 设置，然后切到系统深色，同一套界面即时换肤。画面来自真机模拟器上的参考应用，不是组件静态图；组件柜从设置页进入。
 
 ## 参考应用：设备运维控制台
 
@@ -140,8 +159,8 @@ MainActivity
 需要 **JDK 17+**、**Android SDK 36**。`local.properties` 里写入 `sdk.dir`（Android Studio 会自动生成）。
 
 ```bash
-git clone https://github.com/mullion-android/mullion.git
-cd mullion
+git clone https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose.git
+cd Mullion-Android-Kotlin-Compose
 ./gradlew :sample:installDebug
 ```
 
@@ -291,7 +310,7 @@ val one = PaneStrategy.SINGLE_PANE
 ### 1. 主题与窗口
 
 ```kotlin
-MullionTheme {
+MullionTheme {                        // 跟随系统明暗
     MullionWindowProvider {           // 读取真实窗口 + 铰链 + insets
         App()
     }
@@ -391,9 +410,11 @@ Box(Modifier.fillMaxSize()) {
 
 - `MullionBreakpointLayout`：发布 `breakpoint`，按 `mullionMinWidthDp` / `mullionMaxWidthDp` 显隐子 View。
 - `MullionPaneLayout`：按宽度类自动 1/2/3 栏，并在低于 `minPaneWidth` 时主动降栏。
-- `MullionCardView` / `MullionButtonView`：同一套玻璃与 volt 按钮。
+- `MullionCardView` / `MullionButtonView`：同一套玻璃与主按钮，颜色来自 `values` / `values-night`，配置变化时刷新。
 - `ResourceScaler`：`values/`、`values-w600dp/`、`values-w840dp/` 三层桶 + `metricsFor(widthDp)`。
-- `MullionEdgeToEdge`：`enable(activity)` + `install(root)`。
+- `MullionEdgeToEdge`：`enable(activity)` + `install(root)`；按系统明暗设置状态栏/导航栏图标，并保留 inset。
+
+`MullionPalette.of(context)` 暴露 View 侧的亮/暗 token；旧的静态常量保留为深色兼容回退。
 
 详见 [docs/view-tier.md](docs/view-tier.md)。
 

@@ -56,8 +56,8 @@ public fun MullionCard(
             .shadow(
                 elevation = 14.dp,
                 shape = shape,
-                ambientColor = MullionColors.Volt.copy(alpha = 0.1f),
-                spotColor = MullionColors.Volt.copy(alpha = 0.12f),
+                ambientColor = MullionColors.Ink.copy(alpha = 0.08f),
+                spotColor = MullionColors.Ink.copy(alpha = 0.12f),
             )
             .glass(
                 shape = shape,

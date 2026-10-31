@@ -72,7 +72,7 @@ public fun MullionProgressBar(
             ) {
                 if (label != null) {
                     Text(
-                        text = label.uppercase(),
+                        text = label,
                         style = MullionTextStyles.LabelSmall,
                         color = MullionColors.Faint,
                     )
@@ -80,7 +80,7 @@ public fun MullionProgressBar(
                 if (showValue && safeProgress != null) {
                     Text(
                         text = "${(safeProgress * 100).toInt()}%",
-                        style = MullionTextStyles.MonoSmall.copy(fontSize = 10.sp),
+                        style = MullionTextStyles.UISmall.copy(fontSize = 10.sp),
                         color = MullionColors.Volt,
                     )
                 }
@@ -126,6 +126,9 @@ private fun LinearProgress(
         label = "Progress.sweep",
     )
 
+    val ink = MullionColors.Ink
+    val volt = MullionColors.Volt
+    val voltHigh = MullionColors.VoltHigh
     Canvas(
         modifier = modifier
             .height(6.dp)
@@ -133,7 +136,7 @@ private fun LinearProgress(
     ) {
         val radius = CornerRadius(size.height / 2f, size.height / 2f)
         drawRoundRect(
-            color = MullionColors.Ink.copy(alpha = 0.12f),
+            color = ink.copy(alpha = 0.12f),
             size = size,
             cornerRadius = radius,
         )
@@ -142,7 +145,7 @@ private fun LinearProgress(
             val start = (size.width + barWidth) * sweep - barWidth
             drawRoundRect(
                 brush = Brush.horizontalGradient(
-                    colors = listOf(MullionColors.Volt, MullionColors.VoltHigh),
+                    colors = listOf(volt, voltHigh),
                     startX = start,
                     endX = start + barWidth,
                 ),
@@ -153,7 +156,7 @@ private fun LinearProgress(
         } else {
             drawRoundRect(
                 brush = Brush.horizontalGradient(
-                    listOf(MullionColors.Volt, MullionColors.VoltHigh),
+                    listOf(volt, voltHigh),
                     startX = 0f,
                     endX = size.width,
                 ),
@@ -182,6 +185,8 @@ private fun CircularProgress(
     )
     val stroke = 2.5.dp
 
+    val ink = MullionColors.Ink
+    val volt = MullionColors.Volt
     Canvas(
         modifier = Modifier
             .size(diameter)
@@ -189,12 +194,12 @@ private fun CircularProgress(
     ) {
         val strokePx = stroke.toPx()
         drawCircle(
-            color = MullionColors.Ink.copy(alpha = 0.14f),
+            color = ink.copy(alpha = 0.14f),
             style = Stroke(width = strokePx),
         )
         if (progress != null) {
             drawArc(
-                color = MullionColors.Volt,
+                color = volt,
                 startAngle = -90f,
                 sweepAngle = 360f * progress,
                 useCenter = false,
@@ -203,7 +208,7 @@ private fun CircularProgress(
         } else {
             rotate(rotation) {
                 drawArc(
-                    color = MullionColors.Volt,
+                    color = volt,
                     startAngle = -90f,
                     sweepAngle = 280f,
                     useCenter = false,

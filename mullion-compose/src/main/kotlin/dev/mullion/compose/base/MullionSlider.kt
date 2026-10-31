@@ -21,6 +21,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
@@ -77,7 +78,7 @@ public fun MullionSlider(
             ) {
                 if (label != null) {
                     Text(
-                        text = label.uppercase(),
+                        text = label,
                         style = MullionTextStyles.LabelSmall,
                         color = MullionColors.Faint,
                     )
@@ -86,7 +87,7 @@ public fun MullionSlider(
                 if (valueLabel != null) {
                     Text(
                         text = valueLabel(value),
-                        style = MullionTextStyles.MonoSmall.copy(fontSize = 10.sp),
+                        style = MullionTextStyles.UISmall.copy(fontSize = 10.sp),
                         color = MullionColors.Volt,
                     )
                 }
@@ -104,6 +105,11 @@ public fun MullionSlider(
                 true
             },
         )
+
+        val ink = MullionColors.Ink
+        val volt = MullionColors.Volt
+        val voltHigh = MullionColors.VoltHigh
+        val edgeHigh = MullionColors.EdgeHigh
 
         Canvas(
             modifier = Modifier
@@ -141,14 +147,14 @@ public fun MullionSlider(
             val thumbRadius = 10.dp.toPx()
 
             drawRoundRect(
-                color = MullionColors.Ink.copy(alpha = 0.14f * alpha),
+                color = ink.copy(alpha = 0.14f * alpha),
                 topLeft = Offset(0f, trackY - trackHeight / 2f),
                 size = Size(size.width, trackHeight),
                 cornerRadius = radius,
             )
             drawRoundRect(
                 brush = Brush.horizontalGradient(
-                    listOf(MullionColors.Volt, MullionColors.VoltHigh),
+                    listOf(volt, voltHigh),
                     startX = 0f,
                     endX = size.width * fraction,
                 ),
@@ -162,7 +168,7 @@ public fun MullionSlider(
                 for (i in 0 until effectiveSteps) {
                     val tickX = size.width * (i + 1f) / (effectiveSteps + 1f)
                     drawCircle(
-                        color = MullionColors.Ink.copy(alpha = 0.25f * alpha),
+                        color = ink.copy(alpha = 0.25f * alpha),
                         radius = 1.5.dp.toPx(),
                         center = Offset(tickX, trackY),
                     )
@@ -171,16 +177,21 @@ public fun MullionSlider(
 
             val thumbX = (size.width * fraction).coerceIn(thumbRadius, size.width - thumbRadius)
             drawCircle(
-                color = MullionColors.Volt.copy(alpha = 0.18f * alpha),
+                color = volt.copy(alpha = 0.18f * alpha),
                 radius = thumbRadius + 4.dp.toPx(),
                 center = Offset(thumbX, trackY),
             )
             drawCircle(
-                brush = Brush.verticalGradient(
-                    listOf(MullionColors.Ink, MullionColors.VoltHigh),
-                ),
+                color = Color.White,
                 radius = thumbRadius,
                 center = Offset(thumbX, trackY),
+                alpha = alpha,
+            )
+            drawCircle(
+                color = edgeHigh,
+                radius = thumbRadius,
+                center = Offset(thumbX, trackY),
+                style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.dp.toPx()),
                 alpha = alpha,
             )
         }

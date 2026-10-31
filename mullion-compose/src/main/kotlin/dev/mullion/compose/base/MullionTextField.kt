@@ -67,7 +67,7 @@ public fun MullionTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    textStyle: TextStyle = MullionTextStyles.Mono.copy(fontSize = 12.sp),
+    textStyle: TextStyle = MullionTextStyles.UI.copy(fontSize = 12.sp),
 ) {
     val enabled = state != MullionFieldState.Disabled
     val interaction = remember { MutableInteractionSource() }
@@ -86,7 +86,7 @@ public fun MullionTextField(
     Column(modifier = modifier) {
         if (label != null) {
             Text(
-                text = label.uppercase(),
+                text = label,
                 style = MullionTextStyles.LabelSmall,
                 color = if (state == MullionFieldState.Error) {
                     MullionColors.Signal
@@ -165,7 +165,7 @@ public fun MullionTextField(
         if (supportingText != null) {
             Text(
                 text = supportingText,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 9.5.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 9.5.sp),
                 color = if (state == MullionFieldState.Error) MullionColors.Signal else MullionColors.Faint,
                 modifier = Modifier.padding(top = 6.dp),
             )

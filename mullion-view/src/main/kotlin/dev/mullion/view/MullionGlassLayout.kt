@@ -1,6 +1,7 @@
 package dev.mullion.view
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.LinearGradient
@@ -33,14 +34,15 @@ public open class MullionGlassLayout @JvmOverloads constructor(
         strokeWidth = dp(1f)
     }
     private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.argb(66, 255, 255, 255)
         strokeWidth = dp(1f)
     }
     private val rect = RectF()
+    private var colors: MullionViewColors = MullionPalette.of(context)
 
     private var cornerRadiusPx: Float = dp(18f)
     private var glassAlpha: Float = 0.07f
-    private var borderColor: Int = Color.argb(41, 255, 255, 255)
+    private var borderColor: Int = colors.edge
+    private var borderColorSet = false
     private var selected: Boolean = false
     private var shader: LinearGradient? = null
 
@@ -66,6 +68,7 @@ public open class MullionGlassLayout @JvmOverloads constructor(
                 R.styleable.MullionGlassLayout_mullionBorderColor,
                 borderColor,
             )
+            borderColorSet = a.hasValue(R.styleable.MullionGlassLayout_mullionBorderColor)
             selected = a.getBoolean(
                 R.styleable.MullionGlassLayout_mullionSelected,
                 false,
@@ -92,6 +95,16 @@ public open class MullionGlassLayout @JvmOverloads constructor(
     /** Overrides the 1dp border color. */
     public fun setMullionBorderColor(color: Int) {
         borderColor = color
+        borderColorSet = true
+        invalidate()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        colors = MullionPalette.of(context)
+        if (!borderColorSet) borderColor = colors.edge
+        shader = buildShader(width, height)
+        highlightPaint.color = glassColor(0.10f)
         invalidate()
     }
 
@@ -106,23 +119,8 @@ public open class MullionGlassLayout @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        shader = if (w > 0 && h > 0) {
-            LinearGradient(
-                0f,
-                0f,
-                w.toFloat(),
-                h.toFloat(),
-                intArrayOf(
-                    Color.argb((glassAlpha * 1.4f * 255).roundToInt().coerceIn(0, 255), 255, 255, 255),
-                    Color.argb((glassAlpha * 0.5f * 255).roundToInt().coerceIn(0, 255), 255, 255, 255),
-                    Color.argb((glassAlpha * 1.1f * 255).roundToInt().coerceIn(0, 255), 255, 255, 255),
-                ),
-                floatArrayOf(0f, 0.45f, 1f),
-                Shader.TileMode.CLAMP,
-            )
-        } else {
-            null
-        }
+        highlightPaint.color = glassColor(0.10f)
+        shader = buildShader(w, h)
         invalidateOutline()
     }
 
@@ -135,7 +133,7 @@ public open class MullionGlassLayout @JvmOverloads constructor(
             canvas.drawRoundRect(rect, cornerRadiusPx, cornerRadiusPx, fillPaint)
 
             borderPaint.color = if (selected) {
-                Color.argb(168, 53, 232, 255)
+                withAlpha(colors.volt, 168)
             } else {
                 borderColor
             }
@@ -153,6 +151,32 @@ public open class MullionGlassLayout @JvmOverloads constructor(
         }
         super.draw(canvas)
     }
+
+    private fun buildShader(w: Int, h: Int): LinearGradient? = if (w > 0 && h > 0) {
+        LinearGradient(
+            0f,
+            0f,
+            w.toFloat(),
+            h.toFloat(),
+            intArrayOf(
+                glassColor(glassAlpha * 1.4f),
+                glassColor(glassAlpha * 0.5f),
+                glassColor(glassAlpha * 1.1f),
+            ),
+            floatArrayOf(0f, 0.45f, 1f),
+            Shader.TileMode.CLAMP,
+        )
+    } else {
+        null
+    }
+
+    private fun glassColor(alpha: Float): Int {
+        val scaled = (alpha * colors.glassScale).coerceIn(0f, 1f)
+        return withAlpha(colors.glassTint, (scaled * 255).roundToInt().coerceIn(0, 255))
+    }
+
+    private fun withAlpha(color: Int, alpha: Int): Int =
+        Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color))
 
     private fun dp(value: Float): Float = value * resources.displayMetrics.density
 }

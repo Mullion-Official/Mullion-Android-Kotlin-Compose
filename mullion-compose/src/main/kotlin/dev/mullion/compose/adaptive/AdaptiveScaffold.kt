@@ -7,8 +7,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.window.mullionWindow
@@ -36,6 +40,7 @@ public fun AdaptiveScaffold(
     modifier: Modifier = Modifier,
     mode: NavigationMode? = null,
     drawerOpen: Boolean = true,
+    bottomBarInset: Dp = 0.dp,
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     rail: @Composable () -> Unit = {},
@@ -59,10 +64,27 @@ public fun AdaptiveScaffold(
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             topBar()
             Box(modifier = Modifier.weight(1f)) {
-                content(PaddingValues(0.dp))
-            }
-            if (resolved == NavigationMode.BottomBar) {
-                bottomBar()
+                content(
+                    PaddingValues(
+                        bottom = if (resolved == NavigationMode.BottomBar) 88.dp else 0.dp,
+                    ),
+                )
+                if (resolved == NavigationMode.BottomBar) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .then(
+                                if (bottomBarInset > 0.dp) {
+                                    Modifier.padding(bottom = bottomBarInset)
+                                } else {
+                                    Modifier.navigationBarsPadding()
+                                },
+                            )
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                    ) {
+                        bottomBar()
+                    }
+                }
             }
         }
     }

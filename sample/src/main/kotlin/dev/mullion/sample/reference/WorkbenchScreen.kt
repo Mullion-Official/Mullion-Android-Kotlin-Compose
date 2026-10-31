@@ -31,14 +31,10 @@ import dev.mullion.compose.base.MullionAvatarSize
 import dev.mullion.compose.base.MullionButton
 import dev.mullion.compose.base.MullionButtonSize
 import dev.mullion.compose.base.MullionButtonVariant
-import dev.mullion.compose.base.MullionCard
 import dev.mullion.compose.base.MullionProgressBar
-import dev.mullion.compose.theme.GlassLevel
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.theme.MullionTextStyles
-import dev.mullion.compose.theme.glass
 import dev.mullion.compose.window.currentBreakpoint
-import dev.mullion.sample.ui.Lab
 import dev.mullion.sample.ui.SampleBody
 import dev.mullion.sample.ui.SampleChip
 
@@ -54,17 +50,17 @@ fun WorkbenchScreen(
     ReferencePage {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 36.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 120.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Lab("SHIFT A · ${state.siteName}", color = MullionColors.Volt, size = 9)
+                        RefLabel("当前站点 · ${state.siteName}", color = MullionColors.Volt, size = 9)
                         Spacer(Modifier.height(6.dp))
                         Text(
                             text = "早上好，${state.user.name.substringBefore(' ')}",
-                            style = MullionTextStyles.Mono.copy(
+                            style = MullionTextStyles.UI.copy(
                                 fontSize = if (compact) 24.sp else 30.sp,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = (-0.4).sp,
@@ -132,7 +128,7 @@ fun WorkbenchScreen(
             item {
                 SectionHeading(
                     title = "需要关注",
-                    kicker = "ATTENTION",
+                    kicker = "待处理",
                     action = {
                         MullionButton(
                             text = "全部设备",
@@ -160,7 +156,7 @@ fun WorkbenchScreen(
             }
 
             item {
-                SectionHeading(title = "快捷操作", kicker = "QUICK ACTIONS")
+                SectionHeading(title = "快捷操作", kicker = "快捷操作")
             }
 
             item {
@@ -189,7 +185,7 @@ fun WorkbenchScreen(
             item {
                 SectionHeading(
                     title = "最近动态",
-                    kicker = "ACTIVITY",
+                    kicker = "最近动态",
                     action = {
                         SampleChip("自动刷新 · 30s")
                     },
@@ -211,18 +207,18 @@ fun WorkbenchScreen(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = "北侧边缘网关运行正常",
-                                style = MullionTextStyles.MonoSmall.copy(fontSize = 10.sp),
+                                style = MullionTextStyles.UISmall.copy(fontSize = 10.sp),
                                 color = MullionColors.Ink,
                             )
                             Text(
                                 text = "数据本地缓存 24h · 断网自动接管",
-                                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                                style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                                 color = MullionColors.Faint,
                             )
                         }
                         Text(
-                            text = "LIVE",
-                            style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                            text = "实时",
+                            style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                             color = MullionColors.Mint,
                         )
                     }
@@ -241,7 +237,7 @@ private fun AlertRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .glass(shape = RoundedCornerShape(16.dp), level = GlassLevel.Panel)
+            .appSurface(shape = RoundedCornerShape(16.dp))
             .clickable(onClick = onOpen)
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -259,7 +255,7 @@ private fun AlertRow(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = alert.title,
-                    style = MullionTextStyles.MonoSmall.copy(fontSize = 10.5.sp, fontWeight = FontWeight.SemiBold),
+                    style = MullionTextStyles.UISmall.copy(fontSize = 10.5.sp, fontWeight = FontWeight.SemiBold),
                     color = MullionColors.Ink,
                 )
                 Spacer(Modifier.width(8.dp))
@@ -267,18 +263,18 @@ private fun AlertRow(
             }
             Text(
                 text = alert.detail,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 9.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 9.sp),
                 color = MullionColors.Muted,
             )
             Text(
                 text = alert.timeAgo,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                 color = MullionColors.Faint,
             )
         }
         Text(
             text = "查看 →",
-            style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+            style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
             color = MullionColors.Volt,
         )
     }
@@ -291,26 +287,27 @@ private fun QuickAction(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    MullionCard(
-        modifier = modifier,
-        onClick = onClick,
-        contentPadding = PaddingValues(13.dp),
+    Column(
+        modifier = modifier
+            .appSurface(shape = RoundedCornerShape(14.dp))
+            .clickable(onClick = onClick)
+            .padding(13.dp),
     ) {
         Text(
             text = title,
-            style = MullionTextStyles.MonoSmall.copy(fontSize = 10.5.sp, fontWeight = FontWeight.SemiBold),
+            style = MullionTextStyles.UISmall.copy(fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
             color = MullionColors.Ink,
         )
         Spacer(Modifier.height(3.dp))
         Text(
             text = caption,
-            style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
-            color = MullionColors.Faint,
+            style = MullionTextStyles.UISmall.copy(fontSize = 10.sp),
+            color = MullionColors.Muted,
         )
         Spacer(Modifier.height(12.dp))
         Text(
             text = "→",
-            style = MullionTextStyles.Mono.copy(fontSize = 14.sp),
+            style = MullionTextStyles.UI.copy(fontSize = 15.sp),
             color = MullionColors.Volt,
         )
     }
@@ -340,19 +337,19 @@ fun ActivityRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = event.title,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.SemiBold),
+                style = MullionTextStyles.UISmall.copy(fontSize = 10.sp, fontWeight = FontWeight.SemiBold),
                 color = MullionColors.Ink,
             )
             Text(
                 text = event.detail,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                 color = MullionColors.Muted,
                 maxLines = 2,
             )
         }
         Text(
             text = formatEventTime(event.timestamp),
-            style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+            style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
             color = MullionColors.Faint,
         )
     }

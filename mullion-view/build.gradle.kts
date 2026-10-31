@@ -46,7 +46,7 @@ afterEvaluate {
                 pom {
                     name.set("MULLION View")
                     description.set("View-tier adaptive layouts, glass views and resource scaler for MULLION.")
-                    url.set("https://github.com/mullion-android/mullion")
+                    url.set("https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose")
                     licenses {
                         license {
                             name.set("The Apache License, Version 2.0")
@@ -57,13 +57,13 @@ afterEvaluate {
                         developer {
                             id.set("mullion")
                             name.set("MULLION contributors")
-                            url.set("https://github.com/mullion-android/mullion")
+                            url.set("https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose")
                         }
                     }
                     scm {
-                        connection.set("scm:git:git://github.com/mullion-android/mullion.git")
-                        developerConnection.set("scm:git:ssh://github.com/mullion-android/mullion.git")
-                        url.set("https://github.com/mullion-android/mullion")
+                        connection.set("scm:git:git://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose.git")
+                        developerConnection.set("scm:git:ssh://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose.git")
+                        url.set("https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose")
                     }
                 }
             }

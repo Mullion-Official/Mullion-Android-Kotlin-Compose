@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +37,6 @@ import dev.mullion.compose.window.currentBreakpoint
 import dev.mullion.compose.adaptive.mullionMetrics
 import dev.mullion.compose.window.mullionWindow
 import dev.mullion.core.MullionMetrics
-import dev.mullion.sample.ui.Lab
 import dev.mullion.sample.ui.SampleBody
 import dev.mullion.sample.ui.SampleChip
 
@@ -58,17 +58,17 @@ fun SettingsScreen(
     ReferencePage {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 36.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 120.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Lab("PROFILE / OPERATOR", color = MullionColors.Volt, size = 9)
+                        RefLabel("账户", color = MullionColors.Volt, size = 9)
                         Spacer(Modifier.height(4.dp))
                         Text(
                             text = "设置",
-                            style = MullionTextStyles.Mono.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+                            style = MullionTextStyles.UI.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
                             color = MullionColors.Ink,
                         )
                     }
@@ -90,24 +90,24 @@ fun SettingsScreen(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = state.user.name,
-                                style = MullionTextStyles.Mono.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold),
+                                style = MullionTextStyles.UI.copy(fontSize = 15.sp, fontWeight = FontWeight.Bold),
                                 color = MullionColors.Ink,
                             )
                             Text(
                                 text = "${state.user.role} · ${state.siteName}",
-                                style = MullionTextStyles.MonoSmall.copy(fontSize = 9.sp),
+                                style = MullionTextStyles.UISmall.copy(fontSize = 9.sp),
                                 color = MullionColors.Faint,
                             )
                         }
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
-                                text = "SHIFT A",
-                                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                                text = "早班",
+                                style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                                 color = MullionColors.Mint,
                             )
                             Text(
                                 text = "08:00–20:00",
-                                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                                style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                                 color = MullionColors.Faint,
                             )
                         }
@@ -124,7 +124,7 @@ fun SettingsScreen(
 
             item {
                 ReferenceSection {
-                    Lab("NOTIFICATIONS / AUTOMATION", size = 8)
+                    RefLabel("通知与自动化", size = 8)
                     Spacer(Modifier.height(8.dp))
                     MullionSwitch(
                         checked = state.notificationsEnabled,
@@ -144,11 +144,11 @@ fun SettingsScreen(
             item {
                 ReferenceSection {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Lab("LAYOUT / PANE GUTTER", size = 8)
+                        RefLabel("布局与栏距", size = 8)
                         Spacer(Modifier.weight(1f))
                         Text(
                             text = "${state.paneGutterDp}dp",
-                            style = MullionTextStyles.MonoSmall.copy(fontSize = 9.sp),
+                            style = MullionTextStyles.UISmall.copy(fontSize = 9.sp),
                             color = MullionColors.Volt,
                         )
                     }
@@ -170,11 +170,11 @@ fun SettingsScreen(
             item {
                 ReferenceSection {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Lab("PERMISSIONS", size = 8)
+                        RefLabel("权限", size = 8)
                         Spacer(Modifier.weight(1f))
                         Text(
                             text = "${state.grantedPermissionCount} / ${ReferencePermission.entries.size} 已授予",
-                            style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                            style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                             color = if (state.anyPermissionDenied) MullionColors.Amber else MullionColors.Mint,
                         )
                     }
@@ -198,8 +198,9 @@ fun SettingsScreen(
 
             item {
                 ReferenceSection {
-                    Lab("WINDOW / RESOURCES", size = 8)
+                    RefLabel("窗口与资源", size = 8)
                     Spacer(Modifier.height(8.dp))
+                    InfoRow("外观", if (isSystemInDarkTheme()) "深色 · 跟随系统" else "浅色 · 跟随系统")
                     InfoRow("宽度", "${window.widthDp}dp · ${bp.label}")
                     InfoRow("导航", window.navigationMode.name)
                     InfoRow("当前栏距", "${state.paneGutterDp}dp")
@@ -216,7 +217,7 @@ fun SettingsScreen(
 
             item {
                 ReferenceSection {
-                    Lab("TOOLS / ABOUT", size = 8)
+                    RefLabel("工具与关于", size = 8)
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         MullionButton(
@@ -237,12 +238,12 @@ fun SettingsScreen(
                     Spacer(Modifier.height(12.dp))
                     Text(
                         text = "MULLION 1.0.0 · Apache-2.0 · minSdk 21",
-                        style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                        style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                         color = MullionColors.Faint,
                     )
                     Text(
                         text = "26 个组件 · Compose + View · 一樘窗，处处合缝",
-                        style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+                        style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
                         color = MullionColors.Faint,
                     )
                 }
@@ -265,18 +266,18 @@ private fun PermissionStatusRow(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = permission.label,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 10.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 10.sp),
                 color = MullionColors.Ink,
             )
             Text(
                 text = permission.permission,
-                style = MullionTextStyles.MonoSmall.copy(fontSize = 8.sp),
+                style = MullionTextStyles.UISmall.copy(fontSize = 8.sp),
                 color = MullionColors.Faint,
             )
         }
         Text(
             text = if (granted) "已授予" else "未授予",
-            style = MullionTextStyles.MonoSmall.copy(fontSize = 8.5.sp),
+            style = MullionTextStyles.UISmall.copy(fontSize = 8.5.sp),
             color = if (granted) MullionColors.Mint else MullionColors.Amber,
             modifier = Modifier
                 .background(

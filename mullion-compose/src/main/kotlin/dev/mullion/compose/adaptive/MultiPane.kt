@@ -107,14 +107,16 @@ internal fun PaneDivider(gutter: Dp) {
             .fillMaxHeight(),
         contentAlignment = Alignment.Center,
     ) {
+        val edge = MullionColors.Edge
+        val edgeHigh = MullionColors.EdgeHigh
         Canvas(modifier = Modifier.fillMaxWidth().fillMaxHeight()) {
             val x = size.width / 2f
             drawLine(
                 brush = Brush.verticalGradient(
                     listOf(
-                        MullionColors.Edge.copy(alpha = 0f),
-                        MullionColors.EdgeHigh,
-                        MullionColors.Edge.copy(alpha = 0f),
+                        edge.copy(alpha = 0f),
+                        edgeHigh,
+                        edge.copy(alpha = 0f),
                     ),
                 ),
                 start = Offset(x, 0f),
