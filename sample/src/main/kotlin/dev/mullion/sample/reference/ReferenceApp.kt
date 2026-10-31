@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
@@ -148,7 +149,7 @@ fun ReferenceApp() {
                         start = insets.calculateLeftPadding(androidx.compose.ui.platform.LocalLayoutDirection.current),
                         top = insets.calculateTopPadding(),
                         end = insets.calculateRightPadding(androidx.compose.ui.platform.LocalLayoutDirection.current),
-                    ),
+                    ).imePadding(),
                     topBar = {
                         ReferenceTopBar(
                             screen = screen,
