@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MULLION — 自适应 Android 组件框架 · One window. Every pane.</title>
+<meta name="description" content="MULLION 是开源的 Android 原生自适应组件框架：320dp 到 1200dp，导航、分栏、折叠屏铰链与 inset 由同一根窗棂决定。Compose 与 View 双端。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04070C; --bg-lift:#081320; --ink:#EDF4FA; --muted:#94A9BB; --faint:#5F7688;
+  --volt:#35E8FF; --volt-hi:#84F2FF; --sig:#FF8354; --ok:#3EE8A8; --warn:#FFD166;
+  --edge:rgba(255,255,255,.13); --edge-hi:rgba(255,255,255,.28);
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --cjk:"Noto Sans SC","PingFang SC",sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--cjk);font-size:15px;line-height:1.8;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+::selection{background:rgba(53,232,255,.32);color:#fff}
+.lab{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;line-height:1}
+.mono{font-family:var(--mono)}
+.muted{color:var(--muted)}.faint{color:var(--faint)}.volt{color:var(--volt)}
+.bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bg .blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
+.b1{width:52vw;height:52vw;left:-12vw;top:-16vw;background:radial-gradient(circle,#0E5E74,transparent 68%)}
+.b2{width:46vw;height:46vw;right:-12vw;top:12vh;background:radial-gradient(circle,#123B5E,transparent 66%)}
+.b3{width:52vw;height:52vw;left:16vw;bottom:-24vw;background:radial-gradient(circle,#0C4A44,transparent 68%)}
+.bg .grid{position:absolute;inset:0;opacity:.5;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,#000 0%,#000 55%,transparent 100%)}
+.glass{position:relative;background:linear-gradient(158deg,rgba(255,255,255,.09),rgba(255,255,255,.028) 42%,rgba(255,255,255,.06));-webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%);border:1px solid var(--edge);border-radius:28px;box-shadow:inset 0 1px 0 rgba(255,255,255,.26),0 32px 70px -28px rgba(0,0,0,.72)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(104deg,transparent 26%,rgba(255,255,255,.1) 44%,transparent 72%)}
+.wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:0 24px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.06);border:1px solid var(--edge);border-radius:9999px;padding:5px 12px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted)}
+.dot{width:7px;height:7px;border-radius:9999px;background:var(--ok);box-shadow:0 0 10px rgba(62,232,168,.8)}
+header.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(20px);background:rgba(4,7,12,.55);border-bottom:1px solid rgba(255,255,255,.06)}
+.top-in{max-width:1240px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:18px}
+.wm{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-weight:700;letter-spacing:.16em;font-size:12px}
+.wm svg{width:28px;height:28px}
+nav{margin-left:auto;display:flex;align-items:center;gap:6px}
+nav a{font-family:var(--mono);font-size:10.5px;color:var(--muted);padding:7px 11px;border-radius:9999px;transition:.15s linear}
+nav a:hover{color:var(--ink);background:rgba(255,255,255,.08)}
+nav a.repo{background:linear-gradient(180deg,var(--volt-hi),var(--volt));color:#04222B;font-weight:700;box-shadow:0 6px 22px rgba(53,232,255,.28)}
+main{padding:72px 0 0}
+.hero{display:grid;grid-template-columns:1.02fr .98fr;gap:44px;align-items:center;padding:34px 0 46px}
+.eyebrow{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+h1{font-size:clamp(38px,5.2vw,66px);line-height:1.1;font-weight:900;letter-spacing:-.03em;background:linear-gradient(115deg,#fff 12%,#BFEFFA 52%,var(--volt) 96%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:clamp(15px,1.7vw,18px);line-height:1.85;color:var(--muted);margin:20px 0 24px;max-width:620px}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 18px;border-radius:9999px;font-family:var(--mono);font-size:11px;font-weight:600}
+.btn.fill{background:linear-gradient(180deg,var(--volt-hi),var(--volt));color:#04222B;box-shadow:0 8px 26px rgba(53,232,255,.3),inset 0 1px 0 rgba(255,255,255,.55)}
+.btn.ghost{border:1px solid var(--edge);color:var(--ink);background:rgba(255,255,255,.05)}
+.btn:hover{transform:translateY(-1px)}
+.codeline{display:inline-block;max-width:100%;overflow:auto;white-space:nowrap;font-family:var(--mono);font-size:11px;color:#C3E88D;background:rgba(4,7,12,.5);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:11px 14px}
+.shot{border-radius:24px;overflow:hidden;border:1px solid var(--edge-hi);box-shadow:0 40px 90px -30px rgba(0,0,0,.8);background:#071019}
+.shot img{display:block;width:100%;height:auto}
+.shot.small{max-width:390px;margin:0 auto}
+.shot-cap{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--faint);padding:9px 14px;border-top:1px solid rgba(255,255,255,.07);background:rgba(4,7,12,.4)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:28px 0 10px}
+.stat{padding:20px 20px;border-radius:18px;background:rgba(255,255,255,.045);border:1px solid var(--edge)}
+.stat .v{font-family:var(--mono);font-size:25px;font-weight:600;margin:8px 0 4px;font-variant-numeric:tabular-nums}
+.stat .c{font-size:11px;color:var(--faint);line-height:1.7}
+section{padding:64px 0 0;scroll-margin-top:80px}
+.section-head{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:24px}
+.section-head h2{font-size:clamp(24px,3.4vw,38px);line-height:1.25;font-weight:900;letter-spacing:-.02em}
+.section-head p{max-width:620px;color:var(--muted);font-size:14px;margin-left:auto}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{padding:22px;border-radius:20px;background:rgba(255,255,255,.045);border:1px solid var(--edge);position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 32%,rgba(255,255,255,.06) 48%,transparent 62%);pointer-events:none}
+.card h3{font-family:var(--mono);font-size:14px;font-weight:700;margin:10px 0 6px}
+.card p{font-size:12.5px;color:var(--muted);line-height:1.8}
+.num{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--volt)}
+table{width:100%;border-collapse:collapse;border:1px solid var(--edge);border-radius:16px;overflow:hidden;font-size:12px}
+th{text-align:left;padding:12px 14px;font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);background:rgba(255,255,255,.05);border-bottom:1px solid var(--edge)}
+td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);color:var(--muted);font-family:var(--mono);font-size:11px}
+td:first-child{color:var(--ink);font-weight:600}
+tr:last-child td{border-bottom:0}
+td.hi{color:var(--volt)}
+.modules{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.mlist{border:1px solid var(--edge);border-radius:20px;overflow:hidden;background:rgba(255,255,255,.035)}
+.mlist h3{padding:14px 18px;background:rgba(255,255,255,.05);border-bottom:1px solid var(--edge);font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--volt);font-weight:600}
+.mlist a{display:flex;gap:12px;padding:8px 18px;border-bottom:1px solid rgba(255,255,255,.045);font-family:var(--mono);font-size:11px;color:var(--muted);transition:.12s linear}
+.mlist a:last-child{border-bottom:0}
+.mlist a:hover{background:rgba(255,255,255,.05);color:var(--ink)}
+.mlist a i{font-style:normal;color:var(--faint);width:18px}
+.mlist a:hover i{color:var(--volt)}
+.code{background:rgba(4,7,12,.55);border:1px solid var(--edge);border-radius:18px;overflow:hidden}
+.code-h{display:flex;align-items:center;padding:10px 16px;border-bottom:1px solid var(--edge);font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--faint);background:rgba(255,255,255,.04)}
+.code pre{padding:18px 20px;overflow:auto;font-family:var(--mono);font-size:11.5px;line-height:1.9;color:var(--ink)}
+.k{color:#C792EA}.s{color:#C3E88D}.c{color:var(--faint)}.n{color:#F78C6C}
+.screens{display:grid;grid-template-columns:1fr 1.4fr;gap:16px;align-items:start}
+footer{padding:80px 0 44px;border-top:1px solid rgba(255,255,255,.06);margin-top:70px}
+.foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:flex-end}
+.foot .mark{font-family:var(--mono);font-size:44px;font-weight:700;letter-spacing:-.03em;background:linear-gradient(115deg,#fff,var(--volt));-webkit-background-clip:text;background-clip:text;color:transparent}
+.foot .sub{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.08em;line-height:2.2}
+.foot a{color:var(--muted);border-bottom:1px dotted rgba(255,255,255,.2)}
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;gap:28px}
+  .shot.small{max-width:100%}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .grid3,.modules,.screens{grid-template-columns:1fr}
+  nav a:not(.repo){display:none}
+  .section-head p{margin-left:0}
+}
+@media(max-width:520px){
+  .wrap{padding:0 16px}
+  .top-in{padding:12px 16px}
+  main{padding-top:44px}
+  h1{font-size:36px}
+  .stats{grid-template-columns:1fr 1fr}
+  .stat{padding:15px}
+  .stat .v{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid"></div></div>
+
+<header class="top">
+  <div class="top-in">
+    <a class="wm" href="#top">
+      <svg viewBox="0 0 160 160" aria-hidden="true">
+        <rect x="18" y="18" width="124" height="124" rx="30" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.25)" stroke-width="4"/>
+        <line x1="80" y1="18" x2="80" y2="142" stroke="#35E8FF" stroke-width="7" stroke-linecap="round"/>
+        <line x1="18" y1="62" x2="80" y2="62" stroke="rgba(255,255,255,.3)" stroke-width="3"/>
+        <line x1="80" y1="100" x2="142" y2="100" stroke="rgba(255,255,255,.3)" stroke-width="3"/>
+        <rect x="27" y="71" width="44" height="61" rx="10" fill="rgba(53,232,255,.16)" stroke="rgba(53,232,255,.55)" stroke-width="2"/>
+      </svg>
+      MULLION
+    </a>
+    <div class="chip" style="margin-left:4px"><span class="dot"></span>26 / 26 modules</div>
+    <nav>
+      <a href="showcase.html">Design cabinet</a>
+      <a href="testing.md">Verification</a>
+      <a href="https://github.com/mullion-android/mullion/blob/main/docs/breakpoints.md">Breakpoints</a>
+      <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md">Components</a>
+      <a href="https://github.com/mullion-android/mullion/blob/main/docs/architecture.md">Architecture</a>
+      <a class="repo" href="https://github.com/mullion-android/mullion">GitHub ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+  <section class="hero" style="padding-top:40px">
+    <div>
+      <div class="eyebrow">
+        <span class="chip">Open source · Apache-2.0</span>
+        <span class="chip">minSdk 21</span>
+        <span class="chip">Kotlin 2.2 / Compose 1.9</span>
+      </div>
+      <h1>一樘窗如何分格，<br>由窗棂决定。</h1>
+      <p class="lead">Mullion 是把一扇大窗分成若干玻璃格的结构件——它不发光、不抢眼，却决定了窗格如何排布、如何收束、如何避让铰链。组件库之于应用界面，正是这根窗棂：320dp 到 1200dp 之间，一切分格由它定。</p>
+      <div class="cta">
+        <a class="btn fill" href="https://github.com/mullion-android/mullion">Clone / source ↗</a>
+        <a class="btn ghost" href="showcase.html">Open the design cabinet</a>
+      </div>
+      <div class="codeline">implementation("dev.mullion:compose:1.0.0")</div>
+      <p class="faint mono" style="font-size:9.5px;margin-top:10px">android / compose + view / one ruler / zero reflection</p>
+    </div>
+    <figure class="shot small">
+      <img src="images/hero.png" alt="Mullion sample app hero at 411dp">
+      <figcaption class="shot-cap">REFERENCE APP · 411dp · Compact · Device operations</figcaption>
+    </figure>
+  </section>
+
+  <section class="stats" aria-label="Framework metrics">
+    <div class="stat"><div class="lab faint">Modules</div><div class="v">26</div><div class="c">14 adaptive + 12 base</div></div>
+    <div class="stat"><div class="lab faint">Width classes</div><div class="v">5</div><div class="c">320 / 480 / 600 / 840 / 1200 dp</div></div>
+    <div class="stat"><div class="lab faint">Baseline</div><div class="v">21</div><div class="c">minSdk · API 21+</div></div>
+    <div class="stat"><div class="lab faint">Reflection</div><div class="v">0</div><div class="c">const-folded resolver · no runtime lookup</div></div>
+  </section>
+
+  <section id="why">
+    <div class="section-head">
+      <div>
+        <div class="lab volt">Why mullion</div>
+        <h2 style="margin-top:10px">别再在每个 Screen 里写 if (width)。</h2>
+      </div>
+      <p>把“什么宽度该长什么样”从业务页面里抽出来，交给一根可测试、可复用、可在 Compose 与 View 之间共享的窗棂。</p>
+    </div>
+    <div class="grid3">
+      <div class="card"><div class="num">01 / WIDTH</div><h3>五个宽度类</h3><p>Compact / Medium / Expanded / Large / XL。阈值是常量，Resolver 是纯函数，320dp 到 1200dp 一次性覆盖手机、折叠屏、平板与桌面窗口。</p></div>
+      <div class="card"><div class="num">02 / STRUCTURE</div><h3>导航与栏数一起决定</h3><p>BottomBar → Rail → Drawer；1 → 2 → 3 栏。所有屏共享同一份 PaneStrategy，切换宽度时业务状态不重建。</p></div>
+      <div class="card"><div class="num">03 / HINGE</div><h3>铰链是几何，不是装饰</h3><p>竖缝两侧各留 24dp 安全距离，面板永不跨缝。FoldablePane 在窗格不足时退回单栏，而不是把内容挤碎。</p></div>
+      <div class="card"><div class="num">04 / TWO TIERS</div><h3>Compose 与 View 同尺</h3><p>mullion-compose 提供 26 个组件；mullion-view 提供 BreakpointLayout、PaneLayout、GlassView 与 ResourceScaler。断点规则共用 mullion-core。</p></div>
+      <div class="card"><div class="num">05 / TOKENS</div><h3>玻璃是一套可复现的配方</h3><p>三层渐变、1dp 亮边、深色环境阴影；blur 深度即层级。颜色、圆角、时长、命中区域都由 token 定义。</p></div>
+      <div class="card"><div class="num">06 / OPEN</div><h3>Apache-2.0 · 可发布</h3><p>三个模块都配置了 MavenPublication 与 sources jar。把它接进现有工程，或从源码开始改。</p></div>
+    </div>
+  </section>
+
+  <section id="breakpoints">
+    <div class="section-head">
+      <div><div class="lab volt">The ruler</div><h2 style="margin-top:10px">一根刻度清楚的窗棂。</h2></div>
+      <p>每一档都同时决定导航、栏数、资源桶与字阶。没有第二套断点表，也没有页面级魔法数。</p>
+    </div>
+    <table>
+      <thead><tr><th>Width</th><th>Class</th><th>Navigation</th><th>Panes</th><th>Resource bucket</th><th>Section / Type</th></tr></thead>
+      <tbody>
+        <tr><td>320–479</td><td>Compact</td><td>BottomBar</td><td>1</td><td>values</td><td>48dp / 32sp</td></tr>
+        <tr><td>480–599</td><td>Medium</td><td>BottomBar</td><td>1</td><td>values</td><td>48dp / 32sp</td></tr>
+        <tr><td>600–839</td><td>Expanded</td><td>Rail</td><td>2</td><td>values-w600dp</td><td>80dp / 44sp</td></tr>
+        <tr><td>840–1199</td><td>Large</td><td>Drawer</td><td>3</td><td>values-w840dp</td><td>120dp / 56sp</td></tr>
+        <tr><td>1200+</td><td class="hi">XL</td><td>Drawer</td><td>3</td><td>values-w840dp</td><td>120dp / 56sp</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="modules">
+    <div class="section-head">
+      <div><div class="lab volt">26 modules</div><h2 style="margin-top:10px">14 个管分格，12 个管格里。</h2></div>
+      <p>参考应用先展示真实业务：设备工作台、列表-详情-预览、重启确认与权限流。26 个模块的组件柜保留在设置入口中，每个自适应托盘仍可切换 375 / 760 / 1180 的模拟窗口。</p>
+    </div>
+    <div class="modules">
+      <div class="mlist">
+        <h3>Adaptive Kit / 01–14</h3>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>01</i>AdaptiveScaffold</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>02</i>DockedSheet</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>03</i>OrbitNav</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>04</i>SizeClassText</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>05</i>SearchLayout</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>06</i>MultiPane</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>07</i>AdaptiveDialog</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>08</i>ResourceScaler</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>09</i>EdgeToEdgeBox</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>10</i>DraggableDivider</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>11</i>WindowSizeClass</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>12</i>FoldablePane</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>13</i>SharedAxisTransition</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#adaptive-kit-0114"><i>14</i>PermissionSheet</a>
+      </div>
+      <div class="mlist">
+        <h3>Base Kit / 15–26</h3>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>15</i>Button</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>16</i>TextField</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>17</i>ProgressBar</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>18</i>Checkbox &amp; Radio</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>19</i>Switch</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>20</i>Slider</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>21</i>SegmentedControl</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>22</i>Badge</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>23</i>Avatar</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>24</i>Card</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>25</i>Tabs</a>
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md#base-kit-1526"><i>26</i>Snackbar</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="code">
+    <div class="section-head">
+      <div><div class="lab volt">Quick start</div><h2 style="margin-top:10px">让窗口自己决定结构。</h2></div>
+      <p>一个 content 调用点，三套导航形态。业务页面里没有 width，没有 breakpoint 数字。</p>
+    </div>
+    <div class="code">
+      <div class="code-h">MullionSample.kt</div>
+      <pre><span class="k">@Composable</span>
+<span class="k">fun</span> MullionApp() {
+    <span class="k">val</span> bp = currentBreakpoint()
+    AdaptiveScaffold(
+        topBar = { AppBar() },
+        bottomBar = { OrbitNav(items, selected, { selected = it }) },
+        rail = { OrbitNav(items, selected, { selected = it }) },
+        drawer = { OrbitNav(items, selected, { selected = it }) },
+    ) { _ -&gt;
+        MultiPane(
+            list = { ListPane() },
+            detail = { DetailPane() },
+            preview = { PreviewPane() },
+        )
+    }
+    <span class="c">// 375 → 1 栏 + BottomBar</span>
+    <span class="c">// 760 → 2 栏 + Rail</span>
+    <span class="c">// 1180 → 3 栏 + Drawer</span>
+}</pre>
+    </div>
+  </section>
+
+  <section id="screens">
+    <div class="section-head">
+      <div><div class="lab volt">Real renders</div><h2 style="margin-top:10px">不是截图拼贴，是同一套 Compose 代码。</h2></div>
+      <p>手机、800dp 平板、1280dp 大窗；每个演示格都是真实布局，zoom 只是渲染缩放。</p>
+    </div>
+    <div class="screens">
+      <figure class="shot small">
+        <img src="images/cabinet.png" alt="Adaptive cabinet on a phone">
+        <figcaption class="shot-cap">PHONE · Bp 411 · Breakpoint lab + adaptive card</figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="images/base-kit.png" alt="Base kit on a tablet">
+        <figcaption class="shot-cap">TABLET · Bp 800 · 12 base modules on a shared ruler</figcaption>
+      </figure>
+    </div>
+    <figure class="shot" style="margin-top:16px">
+      <img src="images/dialog-side-panel.png" alt="Adaptive dialog side panel at 1180dp">
+      <figcaption class="shot-cap">XL · Bp 1180 · the same dialog body becomes a side panel</figcaption>
+    </figure>
+  </section>
+
+  <footer>
+    <div class="foot">
+      <div>
+        <div class="mark">MULLION</div>
+        <div class="sub">One window. Every pane. / 一樘窗，处处合缝。<br>26 modules · Apache-2.0 · minSdk 21 · dev.mullion:core / compose / view</div>
+      </div>
+      <div class="sub" style="text-align:right">
+        <a href="https://github.com/mullion-android/mullion">GitHub</a> ·
+        <a href="showcase.html">Design cabinet</a>
+      <a href="testing.md">Verification</a> ·
+        <a href="https://github.com/mullion-android/mullion/blob/main/docs/components.md">Components</a><br>
+        <span class="faint">Brand &amp; layout specs: 布局.html / 组件.html</span>
+      </div>
+    </div>
+  </footer>
+</main>
+</body>
+</html>

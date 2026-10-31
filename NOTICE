@@ -1,0 +1,19 @@
+MULLION
+Copyright 2026 MULLION contributors
+
+This product is licensed under the Apache License, Version 2.0.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+The brand, naming study and the two static design references
+(布局.html and 组件.html) were supplied with the project. The Android
+implementation, sample application, tests and documentation are original
+work by the MULLION contributors.
+
+MULLION depends on AndroidX / Jetpack Compose and the Kotlin standard
+library, which are distributed under the Apache License, Version 2.0.

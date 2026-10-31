@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mullion 窗棂 — 自适应 Android 组件库 · 26 组件设计基准</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+:root{
+  --bg0:#04070C; --glass:rgba(255,255,255,.055); --edge:rgba(255,255,255,.13);
+  --ink:#EDF4FA; --muted:#94A9BB; --faint:#5F7688;
+  --volt:#35E8FF; --volt-hi:#84F2FF; --sig:#FF8354; --ok:#3EE8A8; --warn:#FFD166;
+  --c-key:#C792EA; --c-str:#C3E88D; --c-num:#F78C6C; --c-com:#5F7688;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+  --cjk:"Noto Sans SC","PingFang SC",sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --r-lg:28px; --r-md:18px; --r-sm:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg0);color:var(--ink);font-family:var(--cjk);font-size:15px;line-height:1.8;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:rgba(53,232,255,.32);color:#fff}
+a{color:inherit;text-decoration:none}
+.lab{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;line-height:1}
+.val{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.volt{color:var(--volt)}.faint{color:var(--faint)}.muted{color:var(--muted)}
+.lead{font-size:18px;line-height:1.75;letter-spacing:.01em}
+
+/* ---- background mesh ---- */
+.bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-mesh .blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55}
+.b1{width:52vw;height:52vw;left:-12vw;top:-16vw;background:radial-gradient(circle,#0E5E74,transparent 68%)}
+.b2{width:44vw;height:44vw;right:-10vw;top:8vh;background:radial-gradient(circle,#123B5E,transparent 66%)}
+.b3{width:50vw;height:50vw;left:22vw;bottom:-22vw;background:radial-gradient(circle,#0C4A44,transparent 68%)}
+.b4{width:26vw;height:26vw;right:14vw;bottom:6vh;background:radial-gradient(circle,#5E3A16,transparent 70%);opacity:.32}
+.bg-mesh .noise{position:absolute;inset:0;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E")}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(3vw,-2vh) scale(1.06)}100%{transform:translate(0,0) scale(1)}}
+.b1,.b3{animation:drift 26s ease-in-out infinite alternate}
+.b2{animation:drift 32s ease-in-out infinite alternate-reverse}
+
+/* ---- glass recipe ---- */
+.glass{
+  position:relative;
+  background:linear-gradient(158deg,rgba(255,255,255,.09),rgba(255,255,255,.028) 42%,rgba(255,255,255,.06));
+  -webkit-backdrop-filter:blur(26px) saturate(170%);backdrop-filter:blur(26px) saturate(170%);
+  border:1px solid var(--edge);border-radius:var(--r-lg);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 0 -1px 0 rgba(255,255,255,.05),0 32px 70px -28px rgba(0,0,0,.72);
+  overflow:hidden;
+}
+.glass::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:linear-gradient(104deg,transparent 26%,rgba(255,255,255,.11) 44%,rgba(255,255,255,.02) 58%,transparent 72%);opacity:.85}
+.glass.thin{
+  background:linear-gradient(158deg,rgba(255,255,255,.07),rgba(255,255,255,.022));
+  -webkit-backdrop-filter:blur(18px) saturate(150%);backdrop-filter:blur(18px) saturate(150%);
+  border-radius:var(--r-md);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 18px 44px -22px rgba(0,0,0,.6);
+}
+.gchip{
+  display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  border:1px solid var(--edge);border-radius:9999px;padding:5px 13px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--muted);
+}
+
+/* ---- chrome ---- */
+.top{position:fixed;top:14px;left:22px;right:22px;height:52px;z-index:120;display:flex;align-items:center;gap:18px;padding:0 20px;border-radius:9999px}
+.top .wm{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.16em}
+.top nav{margin-left:auto;display:flex;align-items:center;gap:8px}
+.top nav a{font-family:var(--mono);font-size:11px;color:var(--muted);padding:7px 13px;border-radius:9999px;transition:color .15s linear,background .15s linear}
+.top nav a:hover{color:var(--ink);background:rgba(255,255,255,.09)}
+.top nav a.repo{color:#04222B;background:linear-gradient(180deg,var(--volt-hi),var(--volt));font-weight:600;box-shadow:0 6px 22px rgba(53,232,255,.32),inset 0 1px 0 rgba(255,255,255,.55)}
+.top nav a.repo:hover{background:linear-gradient(180deg,#fff,var(--volt-hi))}
+.dot{width:8px;height:8px;border-radius:9999px;background:var(--ok);box-shadow:0 0 10px rgba(62,232,168,.8)}
+.bp{position:fixed;top:78px;left:22px;right:22px;height:54px;z-index:119;display:flex;align-items:center;padding:0 22px;border-radius:9999px}
+.bp-scale{position:relative;width:82%;height:100%;flex:0 0 82%}
+.bp-base{position:absolute;left:0;right:0;top:30px;height:1px;background:rgba(255,255,255,.16)}
+.bp-end{position:absolute;top:25px;width:1px;height:11px;background:rgba(255,255,255,.3)}
+.bp-tick{position:absolute;top:0;height:100%;transform:translateX(-50%)}
+.bp-tick i{position:absolute;top:25px;left:50%;width:1px;height:13px;background:var(--sig);transition:background .15s linear,height .15s linear,box-shadow .15s linear}
+.bp-tick b{position:absolute;top:7px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;color:var(--muted);white-space:nowrap;transition:color .15s linear}
+.bp-tick s{position:absolute;top:31px;left:50%;transform:translateX(-50%) rotate(38deg);transform-origin:left top;font-family:var(--mono);font-size:10px;color:var(--faint);text-decoration:none;white-space:nowrap}
+.bp-tick.on i{background:var(--volt);height:17px;box-shadow:0 0 12px rgba(53,232,255,.9)}
+.bp-tick.on b{color:var(--volt)}
+.bp-read{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--warn);letter-spacing:.06em;white-space:nowrap}
+
+main{position:relative;z-index:1;padding-top:170px}
+.wrap{max-width:1320px;margin:0 auto;padding:0 24px}
+
+/* ---- head / naming ---- */
+.cab-head{padding:40px 0 0}
+.naming{display:grid;grid-template-columns:210px 1fr;gap:36px;padding:42px 44px;align-items:center}
+.mark-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+.wordmark{
+  font-family:var(--mono);font-size:clamp(44px,7vw,88px);font-weight:700;letter-spacing:-.02em;line-height:1;
+  background:linear-gradient(112deg,#fff 8%,#BFEFFA 48%,var(--volt) 92%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.phon{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.14em;margin:14px 0 16px}
+.code-line{
+  display:inline-block;font-family:var(--mono);font-size:12px;color:var(--c-str);
+  background:rgba(4,7,12,.42);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:11px 15px;margin-top:16px;
+}
+.claim{font-size:clamp(23px,3.1vw,36px);font-weight:900;line-height:1.3;letter-spacing:-.01em;margin:38px 0 22px;max-width:920px}
+.alt-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:16px}
+.naming-alt{padding:20px 26px}
+.alt-tbl{width:100%;border-collapse:collapse}
+.alt-tbl th{text-align:left;font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--faint);padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.12);text-transform:uppercase}
+.alt-tbl td{padding:10px;border-bottom:1px solid rgba(255,255,255,.07);font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.alt-tbl td:first-child{color:var(--ink);font-weight:700}
+.alt-tbl tr.pick td{color:var(--volt)}
+.alt-tbl tr.pick td:first-child{color:var(--volt)}
+.usage{padding:20px 26px}
+.usage .r{display:flex;gap:13px;align-items:baseline;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.usage .r:last-child{border-bottom:0}
+.usage .r b{font-family:var(--mono);font-size:11px;color:var(--volt);letter-spacing:.12em}
+.usage .r span{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.count-strip{display:flex;flex-wrap:wrap;gap:14px;margin:22px 0 0}
+.count-strip .c{flex:1;min-width:180px;padding:20px 22px;border-radius:var(--r-md)}
+.count-strip .c .val{margin-top:10px}
+.count-strip .c .cap{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.05em;margin-top:7px;line-height:1.7}
+
+/* ---- cabinet ---- */
+.cab{display:grid;grid-template-columns:216px 1fr;gap:28px;align-items:start;padding-top:70px}
+.cab-index{position:sticky;top:156px;padding:18px 15px;border-radius:var(--r-md);max-height:calc(100vh - 196px);overflow:auto}
+.cab-index .grp{margin:14px 0 8px;color:var(--faint)}
+.cab-index .grp:first-child{margin-top:0}
+.cab-index a{display:flex;gap:9px;align-items:baseline;padding:5px 10px;border-radius:9999px;font-family:var(--mono);font-size:10.5px;color:var(--muted);transition:color .15s linear,background .15s linear}
+.cab-index a i{font-style:normal;color:var(--faint);font-size:9.5px}
+.cab-index a:hover,.cab-index a.act{color:var(--ink);background:rgba(255,255,255,.09)}
+.cab-index a.act i,.cab-index a:hover i{color:var(--volt)}
+.comp{padding:26px 0 34px;scroll-margin-top:170px}
+.comp:first-child{padding-top:8px}
+.comp-inner{padding:34px 34px 36px}
+.comp-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.comp-head h2{font-family:var(--mono);font-size:26px;font-weight:700;letter-spacing:-.01em}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
+.comp-desc{max-width:720px;color:var(--muted);margin:14px 0 26px}
+
+/* ---- tray ---- */
+.tray{border-radius:var(--r-lg);overflow:hidden}
+.tray-ctl{display:flex;align-items:center;gap:13px;height:52px;padding:0 18px;background:rgba(255,255,255,.045);border-bottom:1px solid rgba(255,255,255,.09)}
+.pair-toggle{display:inline-flex;border-radius:9999px;background:rgba(255,255,255,.06);border:1px solid var(--edge);overflow:hidden}
+.pair-toggle button{font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:6px 16px;background:transparent;border:0;color:var(--muted);cursor:pointer;transition:all .15s linear}
+.pair-toggle button.on{background:linear-gradient(180deg,var(--volt-hi),var(--volt));color:#04222B;font-weight:600;box-shadow:0 4px 16px rgba(53,232,255,.35)}
+.mini-act{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);background:rgba(255,255,255,.06);border:1px solid var(--edge);height:30px;padding:0 13px;border-radius:9999px;cursor:pointer;transition:all .15s linear}
+.mini-act:hover{border-color:rgba(53,232,255,.6);color:var(--volt)}
+.mini-act.on-volt{color:#04222B;background:linear-gradient(180deg,var(--volt-hi),var(--volt));border-color:transparent;font-weight:600}
+.tray-ctl .zoom{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--faint)}
+.tray-ctl .zoom b{color:var(--warn);font-weight:600}
+.tray-stage{position:relative;overflow:hidden;background:radial-gradient(120% 120% at 18% 0%,rgba(53,232,255,.07),transparent 52%),radial-gradient(120% 130% at 92% 100%,rgba(255,131,84,.06),transparent 55%),rgba(4,7,12,.42)}
+
+/* ---- props / code ---- */
+.comp-foot{display:grid;grid-template-columns:5fr 7fr;gap:22px;margin-top:22px}
+.props{padding:20px 22px;border-radius:var(--r-md)}
+.props .hd{color:var(--faint);margin-bottom:12px}
+.props .r{display:flex;align-items:baseline;gap:12px;height:38px;border-bottom:1px solid rgba(255,255,255,.08)}
+.props .r:last-child{border-bottom:0}
+.props .r .k{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.06em;width:170px;flex:0 0 170px}
+.props .r .v{font-family:var(--mono);font-size:12px;color:var(--ink);margin-left:auto;text-align:right}
+.codebox{border-radius:var(--r-md);overflow:hidden}
+.code-h{display:flex;height:38px;align-items:center;padding:0 16px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.09);font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted)}
+.code-h .copy{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted);background:rgba(255,255,255,.07);border:1px solid var(--edge);border-radius:9999px;padding:5px 13px;cursor:pointer;transition:all .15s linear}
+.code-h .copy:hover{color:var(--volt);border-color:rgba(53,232,255,.5)}
+.code-h .copy.flash{color:#04222B;background:linear-gradient(180deg,var(--volt-hi),var(--volt));border-color:transparent}
+.code-scroll{display:flex;max-height:290px;overflow:auto;background:rgba(4,7,12,.42)}
+.cal{width:32px;flex:0 0 32px;border-right:1px solid rgba(255,255,255,.08);position:relative}
+.cal .ticks{position:absolute;top:0;bottom:0;right:0;width:7px;background-image:repeating-linear-gradient(to bottom,rgba(255,255,255,.14) 0 1px,transparent 1px 24px)}
+.cal span{position:absolute;right:7px;font-family:var(--mono);font-size:9px;color:var(--faint);letter-spacing:.06em}
+.cl{display:flex;min-height:22px;line-height:22px}
+.cl .ln{flex:0 0 42px;text-align:right;padding-right:11px;color:var(--faint);font-family:var(--mono);font-size:10px;user-select:none}
+.cl .cd{white-space:pre;font-family:var(--mono);font-size:12.5px;color:var(--ink);padding-right:20px}
+.t-key{color:var(--c-key)}.t-str{color:var(--c-str)}.t-num{color:var(--c-num)}.t-com{color:var(--c-com)}
+.tw{position:relative;overflow-x:auto;border-radius:var(--r-md)}
+table{width:100%;border-collapse:collapse;min-width:620px}
+thead th{text-align:left;background:rgba(255,255,255,.07);padding:12px 14px;font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);border-bottom:1px solid rgba(255,255,255,.12);white-space:nowrap}
+tbody td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.07);font-family:var(--mono);font-size:11.5px;vertical-align:middle;color:var(--muted)}
+tbody tr{transition:background .12s linear}
+tbody tr:hover{background:rgba(255,255,255,.05)}
+td.name{color:var(--ink);font-family:var(--cjk);font-size:13.5px;font-weight:500}
+td.on{color:var(--volt);font-weight:600}
+
+/* ---- demo kit (adaptive) ---- */
+.dk{position:absolute;top:0;left:0;transform-origin:top left;background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.03) 45%,rgba(255,255,255,.07));-webkit-backdrop-filter:blur(22px) saturate(165%);backdrop-filter:blur(22px) saturate(165%);border:1px solid var(--edge);border-radius:22px;color:var(--ink);overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 28px 60px -26px rgba(0,0,0,.7);font-family:var(--cjk)}
+.dk-bar{height:34px;display:flex;align-items:center;gap:10px;padding:0 16px;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.1);font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--faint)}
+.dk-bar b{color:var(--ink);font-weight:600;letter-spacing:.12em}
+.dk-bar .bp-tag{margin-left:auto;color:var(--volt)}
+.dk-main{display:flex;min-height:260px}
+.dk-col{flex:1;display:flex;flex-direction:column;min-width:0}
+.dk-content{display:flex;gap:10px;padding:14px;flex-wrap:wrap;flex:1;align-content:flex-start}
+.dk-tile{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-sm);position:relative;min-height:70px;box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+.dk-tile .dot{position:absolute;top:9px;left:9px;width:18px;height:18px;border:1px solid rgba(255,255,255,.32);border-radius:9999px}
+.dk-l{height:6px;border-radius:9999px;background:rgba(255,255,255,.14);margin:6px 0}
+.dk-l.s{width:46%}.dk-l.m{width:68%}.dk-l.x{width:32%}.dk-l.w{width:88%}
+.dk-nav{display:flex;gap:6px;padding:9px 11px;background:rgba(255,255,255,.05);border-top:1px solid rgba(255,255,255,.1)}
+.dk-nav .it{flex:1;height:30px;border:1px solid rgba(255,255,255,.12);border-radius:9999px;background:rgba(255,255,255,.04);cursor:pointer;transition:all .15s linear}
+.dk-nav .it.on{border-color:rgba(53,232,255,.75);background:rgba(53,232,255,.16);box-shadow:0 0 18px rgba(53,232,255,.28)}
+.dk-rail{width:58px;flex:0 0 58px;display:none;flex-direction:column;gap:8px;padding:12px 9px;background:rgba(255,255,255,.045);border-right:1px solid rgba(255,255,255,.1)}
+.dk-rail .it{height:36px;border:1px solid rgba(255,255,255,.12);border-radius:var(--r-sm);cursor:pointer}
+.dk-rail .it.on{border-color:rgba(53,232,255,.75);background:rgba(53,232,255,.16)}
+.dk-drawer{width:160px;flex:0 0 160px;display:none;flex-direction:column;padding:12px 10px;gap:3px;background:rgba(255,255,255,.045);border-right:1px solid rgba(255,255,255,.1)}
+.dk-drawer .it{height:28px;display:flex;align-items:center;padding:0 12px;border-radius:9999px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer}
+.dk-drawer .it.on{background:rgba(53,232,255,.16);color:var(--volt)}
+.dk-btn{height:30px;padding:0 16px;border:0;border-radius:9999px;background:linear-gradient(180deg,var(--volt-hi),var(--volt));color:#04222B;font-family:var(--mono);font-size:11px;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(53,232,255,.3),inset 0 1px 0 rgba(255,255,255,.55)}
+.dk-btn.ghost{background:rgba(255,255,255,.07);color:var(--ink);border:1px solid var(--edge);box-shadow:none}
+.dk-hinge{width:4px;flex:0 0 4px;border-radius:9999px;background:repeating-linear-gradient(to bottom,var(--sig) 0 7px,transparent 7px 14px)}
+.dk-scrim{position:absolute;inset:0;background:rgba(4,7,12,.5);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.dk-note{position:absolute;bottom:12px;left:14px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--faint)}
+.dk-cap{padding:9px 16px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--faint);border-top:1px solid rgba(255,255,255,.09);background:rgba(4,7,12,.28)}
+.d01 .dk-content .dk-tile,.d03 .dk-content .dk-tile{flex:1;min-width:110px;height:88px}
+.d01[data-bp="760"] .dk-rail,.d03[data-bp="760"] .dk-rail{display:flex}
+.d01[data-bp="1180"] .dk-drawer,.d03[data-bp="1180"] .dk-drawer{display:flex}
+.d01[data-bp="760"] .dk-nav,.d01[data-bp="1180"] .dk-nav,.d03[data-bp="760"] .dk-nav,.d03[data-bp="1180"] .dk-nav{display:none}
+.d02 .d02-stage{position:relative;display:flex;flex:1;padding:14px;gap:12px;min-height:280px}
+.d02 .pane-main{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-md);padding:14px}
+.d02 .d02-sheet{width:44%;min-width:180px;padding:14px;border-radius:var(--r-md);background:rgba(53,232,255,.12);border:1px solid rgba(53,232,255,.55);box-shadow:0 0 32px rgba(53,232,255,.18),inset 0 1px 0 rgba(255,255,255,.24);transition:all .38s var(--ease)}
+.d02[data-fold="bottom"] .d02-stage{display:block}
+.d02[data-fold="bottom"] .d02-sheet{position:absolute;left:14px;right:14px;bottom:14px;width:auto;min-height:150px}
+.d02 .fold-state{color:var(--sig);letter-spacing:.12em}
+.d04 .measure{padding:24px 26px;flex:1}
+.d04 .measure p{line-height:1.8;color:var(--ink);transition:font-size .3s var(--ease)}
+.d04 .meta{display:flex;gap:26px;padding:14px 26px 20px;border-top:1px solid rgba(255,255,255,.1)}
+.d04 .meta .val{font-size:17px}
+.d05 .sr-wrap{display:flex;flex:1;min-height:270px}
+.d05 .sr-bar{height:40px;display:flex;align-items:center;gap:8px;padding:0 14px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.1);font-family:var(--mono);font-size:11px;color:var(--faint)}
+.d05 .sr-bar .ph{flex:1;height:24px;border:1px solid rgba(255,255,255,.16);border-radius:9999px;display:flex;align-items:center;padding:0 12px;color:var(--faint)}
+.d05 .sr-list{flex:1;padding:12px;display:flex;flex-direction:column;gap:8px}
+.d05 .sr-item{height:46px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-sm);display:flex;align-items:center;padding:0 14px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;transition:all .15s linear}
+.d05 .sr-item.on{border-color:rgba(53,232,255,.6);color:var(--ink);background:rgba(53,232,255,.1)}
+.d05 .sr-prev{display:none;flex:0 0 260px;border-left:1px solid rgba(255,255,255,.1);padding:14px;background:rgba(255,255,255,.035)}
+.d05 .sr-filters{display:none;flex:0 0 150px;border-left:1px solid rgba(255,255,255,.1);padding:14px;background:rgba(255,255,255,.028)}
+.d05[data-bp="760"] .sr-prev{display:block}
+.d05[data-bp="1180"] .sr-prev,.d05[data-bp="1180"] .sr-filters{display:block}
+.d06 .mp{display:flex;flex:1;min-height:280px;gap:10px;padding:12px}
+.d06 .mp > div{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-md);padding:14px}
+.d06 .mp-list{flex:1}
+.d06 .mp-detail{display:none;flex:1.3}
+.d06 .mp-prev{display:none;flex:1}
+.d06[data-bp="760"] .mp-detail{display:block}
+.d06[data-bp="1180"] .mp-detail,.d06[data-bp="1180"] .mp-prev{display:block}
+.d06 .row{height:38px;border:1px solid rgba(255,255,255,.12);border-radius:9999px;margin-bottom:8px;display:flex;align-items:center;padding:0 14px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.d06 .row.on{border-color:rgba(53,232,255,.65);color:var(--ink);background:rgba(53,232,255,.1)}
+.d07 .d07-stage{position:relative;flex:1;min-height:280px;padding:16px}
+.d07 .d07-body{display:flex;gap:10px;flex-wrap:wrap}
+.d07 .d07-body .dk-tile{flex:1;min-width:130px;height:76px}
+.d07 .d07-modal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56%;min-width:220px;padding:18px;border-radius:var(--r-md);background:rgba(255,255,255,.11);border:1px solid rgba(53,232,255,.5);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);box-shadow:0 32px 80px -20px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.32);transition:all .34s var(--ease)}
+.d07[data-bp="1180"] .d07-modal{top:16px;bottom:16px;right:16px;left:auto;transform:none;width:34%}
+.d07[data-open="0"] .d07-modal,.d07[data-open="0"] .dk-scrim{opacity:0;pointer-events:none;transform:translate(-50%,-46%)}
+.d07[data-open="0"][data-bp="1180"] .d07-modal{transform:translateX(18px)}
+.d08 .rs{flex:1;padding:18px;display:flex;flex-direction:column;gap:14px}
+.d08 .rs-row{display:flex;align-items:center;gap:14px}
+.d08 .rs-row .k{font-family:var(--mono);font-size:11px;color:var(--faint);width:170px;flex:0 0 170px}
+.d08 .rs-bar{height:12px;border-radius:9999px;background:linear-gradient(90deg,rgba(53,232,255,.75),rgba(53,232,255,.28));border:1px solid rgba(53,232,255,.4);transition:width .38s var(--ease)}
+.d08 .rs-row .v{font-family:var(--mono);font-size:12px;color:var(--volt);margin-left:auto}
+.d08 .bucket{color:var(--warn);letter-spacing:.12em}
+.d09 .d09-screen{position:relative;flex:1;min-height:290px;overflow:hidden}
+.d09 .band{position:absolute;left:0;right:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;letter-spacing:.12em}
+.d09 .band.status{top:0;height:28px;background:rgba(255,131,84,.18);border-bottom:1px dashed rgba(255,131,84,.7);color:var(--sig)}
+.d09 .band.navbar{bottom:0;height:24px;background:rgba(255,131,84,.18);border-top:1px dashed rgba(255,131,84,.7);color:var(--sig)}
+.d09 .band.ime{bottom:24px;height:0;background:rgba(53,232,255,.14);border-top:1px dashed rgba(53,232,255,.7);color:var(--volt);overflow:hidden;transition:height .38s var(--ease)}
+.d09[data-ime="1"] .band.ime{height:110px}
+.d09 .d09-content{position:absolute;top:28px;bottom:24px;left:0;right:0;padding:16px;transition:bottom .38s var(--ease);display:flex;flex-direction:column;gap:8px}
+.d09[data-ime="1"] .d09-content{bottom:134px}
+.d10 .d10-wrap{display:flex;flex:1;min-height:280px;padding:12px}
+.d10 .pA{width:var(--split,42%);background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-md) 0 0 var(--r-md);padding:14px;overflow:hidden}
+.d10 .pB{flex:1;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);border-radius:0 var(--r-md) var(--r-md) 0;padding:14px}
+.d10 .d10-div{width:11px;flex:0 0 11px;cursor:col-resize;display:flex;align-items:center;justify-content:center;position:relative}
+.d10 .d10-div::after{content:"";width:5px;height:64px;border-radius:9999px;background:linear-gradient(180deg,rgba(53,232,255,.9),rgba(53,232,255,.35));box-shadow:0 0 18px rgba(53,232,255,.55)}
+.d10 .readout{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--warn);padding:9px 16px;border-top:1px solid rgba(255,255,255,.09);background:rgba(4,7,12,.28)}
+.d11 .d11-wrap{flex:1;padding:20px;display:flex;flex-direction:column;gap:18px;justify-content:center}
+.d11 .meter{position:relative;height:68px;border-radius:var(--r-md);border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);overflow:hidden}
+.d11 .seg{position:absolute;top:0;bottom:0;border-right:1px solid rgba(255,255,255,.12)}
+.d11 .seg span{position:absolute;top:10px;left:10px;font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.08em}
+.d11 .cursor{position:absolute;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--volt-hi),var(--volt));border-radius:9999px;box-shadow:0 0 22px rgba(53,232,255,.9);transition:left .18s var(--ease)}
+.d11 .cursor b{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;color:var(--volt);white-space:nowrap}
+.d11 input[type=range]{width:100%;accent-color:var(--volt);cursor:ew-resize}
+.d11 .status{display:flex;gap:28px;align-items:baseline;flex-wrap:wrap}
+.d12 .d12-wrap{position:relative;flex:1;display:flex;min-height:280px;padding:16px;gap:0;align-items:stretch}
+.d12 .leaf{flex:1;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.13);border-radius:var(--r-md);padding:14px;transition:all .42s var(--ease)}
+.d12[data-fold="tent"] .leaf.l{transform:skewY(-6deg)}
+.d12[data-fold="tent"] .leaf.r{transform:skewY(6deg)}
+.d12[data-fold="half"] .leaf.r{opacity:.4}
+.d12 .d12-msg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:var(--mono);font-size:11px;color:var(--sig);letter-spacing:.14em;display:none}
+.d12[data-fold="half"] .d12-msg{display:block}
+.d13 .ax{position:relative;flex:1;min-height:280px;overflow:hidden}
+.d13 .ax-pane{position:absolute;inset:16px;padding:18px;border-radius:var(--r-md);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);opacity:0;transform:translateX(28px);transition:opacity .24s cubic-bezier(.4,0,.2,1),transform .24s cubic-bezier(.4,0,.2,1)}
+.d13 .ax-pane.on{opacity:1;transform:none}
+.d13 .ax-pane.off{opacity:0;transform:translateX(-28px)}
+.d13 .toks{display:flex;gap:22px;padding:11px 16px;border-top:1px solid rgba(255,255,255,.09);font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--faint);background:rgba(4,7,12,.28)}
+.d13 .toks b{color:var(--volt);font-weight:600}
+.d14 .d14-stage{position:relative;flex:1;min-height:280px;padding:16px}
+.d14 .trigger{display:inline-flex}
+.d14 .psheet{position:absolute;padding:18px;border-radius:var(--r-md);background:rgba(255,255,255,.11);border:1px solid rgba(53,232,255,.5);-webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);box-shadow:0 30px 70px -22px rgba(0,0,0,.78),inset 0 1px 0 rgba(255,255,255,.3);transition:all .34s var(--ease)}
+.d14 .psheet.bottom{left:16px;right:16px;bottom:16px}
+.d14 .psheet.anchor{width:280px;top:70px;left:26px}
+.d14[data-open="0"] .psheet{opacity:0;transform:translateY(12px);pointer-events:none}
+.d14 .perm-row{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--muted);padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.d14 .perm-row i{width:9px;height:9px;border:1px solid var(--volt);border-radius:9999px;display:inline-block;box-shadow:0 0 10px rgba(53,232,255,.6)}
+
+/* ---- BASE KIT ---- */
+.basekit{margin-top:26px}
+.bk-bar{display:flex;align-items:center;gap:13px;height:52px;padding:0 18px;background:rgba(255,255,255,.045);border-bottom:1px solid rgba(255,255,255,.09)}
+.bk-stage{padding:22px}
+.bk-grid{display:grid;gap:16px}
+.bk[data-bp="375"] .bk-grid{grid-template-columns:1fr}
+.bk[data-bp="760"] .bk-grid{grid-template-columns:1fr 1fr}
+.bk[data-bp="1180"] .bk-grid{grid-template-columns:1fr 1fr 1fr}
+.bcard{position:relative;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);border-radius:var(--r-md);padding:18px;overflow:hidden;scroll-margin-top:180px}
+.bcard::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 32%,rgba(255,255,255,.07) 48%,transparent 62%);opacity:.55;pointer-events:none}
+.bcard-h{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.bcard-h .num{font-family:var(--mono);font-size:10px;color:var(--volt);letter-spacing:.14em}
+.bcard-h .nm{font-family:var(--mono);font-size:15px;font-weight:700}
+.bcard-h .tag{margin-left:auto;font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--faint)}
+.bd{min-height:118px;display:flex;flex-direction:column;gap:11px;justify-content:center;position:relative;z-index:1}
+.bcard-f{margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--faint);line-height:1.9}
+.bp-760,.bp-1180{display:none}
+.bk[data-bp="760"] .bp-760{display:flex}
+.bk[data-bp="1180"] .bp-760{display:flex}
+.bk[data-bp="1180"] .bp-1180{display:flex}
+
+/* button */
+.bb{height:44px;padding:0 18px;border:0;border-radius:9999px;font-family:var(--mono);font-size:12px;font-weight:600;cursor:pointer;transition:all .12s linear;white-space:nowrap}
+.bb.fill{background:linear-gradient(180deg,var(--volt-hi),var(--volt));color:#04222B;box-shadow:0 6px 18px rgba(53,232,255,.28),inset 0 1px 0 rgba(255,255,255,.5)}
+.bb.fill:hover{filter:brightness(1.1)}
+.bb.fill:active{transform:translateY(1px)}
+.bb.tonal{background:rgba(255,255,255,.13);color:var(--ink);border:1px solid var(--edge)}
+.bb.tonal:hover{background:rgba(255,255,255,.2)}
+.bb.outline{background:transparent;color:var(--volt);border:1px solid rgba(53,232,255,.55)}
+.bb.outline:hover{background:rgba(53,232,255,.12)}
+.bb.text{background:transparent;color:var(--volt)}
+.bb.text:hover{background:rgba(53,232,255,.1)}
+.bb.sm{height:34px;padding:0 12px;font-size:10.5px}
+.bb.md{height:44px}
+.bb.lg{height:52px;padding:0 22px;font-size:13px}
+.bb.icon{width:44px;padding:0}
+.brw{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bk[data-bp="375"] .brw.grow .bb{flex:1 1 100%}
+
+/* field */
+.bd.fields{display:grid;grid-template-columns:1fr;gap:11px}
+.bk[data-bp="760"] .bd.fields,.bk[data-bp="1180"] .bd.fields{grid-template-columns:1fr 1fr}
+.bf{display:flex;flex-direction:column;gap:6px}
+.bf > span{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--faint);text-transform:uppercase}
+.bf input{height:42px;padding:0 13px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid var(--edge);color:var(--ink);font-family:var(--mono);font-size:12px;outline:none;width:100%;transition:border-color .15s linear,box-shadow .15s linear}
+.bf input::placeholder{color:var(--faint)}
+.bf input:focus{border-color:var(--volt);box-shadow:0 0 0 3px rgba(53,232,255,.18)}
+.bf.err input{border-color:rgba(255,131,84,.7)}
+.bf.err em{font-style:normal;font-family:var(--mono);font-size:10px;color:var(--sig);letter-spacing:.06em}
+
+/* progress */
+.pl-row{display:flex;align-items:center;gap:12px}
+.pl-l{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--faint);width:100px;flex:0 0 100px}
+.pbar{flex:1;height:6px;border-radius:9999px;background:rgba(255,255,255,.12);overflow:hidden}
+.pbar i{display:block;height:100%;border-radius:9999px;background:linear-gradient(90deg,var(--volt),var(--volt-hi))}
+.pbar.det i{transition:width .16s linear}
+.pbar.ind i{width:32%;animation:slide 1.3s ease-in-out infinite}
+@keyframes slide{0%{transform:translateX(-110%)}100%{transform:translateX(330%)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pv{font-family:var(--mono);font-size:11px;color:var(--volt);width:38px;text-align:right}
+.pspin{width:26px;height:26px;border-radius:9999px;border:2.5px solid rgba(255,255,255,.14);border-top-color:var(--volt);animation:spin .9s linear infinite}
+
+/* checks */
+.bd.checks{display:grid;grid-template-columns:1fr;gap:8px}
+.bk[data-bp="760"] .bd.checks{grid-template-columns:1fr 1fr}
+.bk[data-bp="1180"] .bd.checks{grid-template-columns:1fr 1fr 1fr}
+.bc{display:flex;align-items:center;gap:9px;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--muted);min-height:30px}
+.bc input{position:absolute;opacity:0;pointer-events:none}
+.bc i{width:18px;height:18px;flex:0 0 18px;border-radius:5px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);position:relative;transition:all .15s linear}
+.bc.radio i{border-radius:9999px}
+.bc input:checked + i{background:linear-gradient(180deg,var(--volt-hi),var(--volt));border-color:transparent}
+.bc input:checked + i::after{content:"";position:absolute;left:5.5px;top:2px;width:5px;height:9px;border:solid #04222B;border-width:0 2px 2px 0;transform:rotate(42deg)}
+.bc.radio input:checked + i::after{content:"";left:5px;top:5px;width:6px;height:6px;border:0;background:#04222B;border-radius:9999px;transform:none}
+.bc input:checked ~ span{color:var(--ink)}
+.bc:hover i{border-color:rgba(53,232,255,.6)}
+
+/* switch */
+.brow{display:flex;align-items:center;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:11px;color:var(--muted);min-height:32px}
+.sw{appearance:none;-webkit-appearance:none;width:52px;height:30px;flex:0 0 52px;border-radius:9999px;background:rgba(255,255,255,.13);border:1px solid var(--edge);position:relative;cursor:pointer;transition:background .18s linear,border-color .18s linear}
+.sw::after{content:"";position:absolute;top:2.5px;left:3px;width:22px;height:22px;border-radius:9999px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.35);transition:transform .18s var(--ease)}
+.sw:checked{background:linear-gradient(180deg,var(--volt-hi),var(--volt));border-color:transparent}
+.sw:checked::after{transform:translateX(22px)}
+
+/* slider */
+.bs-row{display:flex;align-items:center;gap:11px}
+.bs-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--faint);width:104px;flex:0 0 104px}
+.rv{font-family:var(--mono);font-size:11px;color:var(--volt);width:46px;text-align:right}
+.sl{flex:1;-webkit-appearance:none;appearance:none;height:22px;background:transparent;cursor:ew-resize}
+.sl::-webkit-slider-runnable-track{height:5px;border-radius:9999px;background:rgba(255,255,255,.14)}
+.sl::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:9999px;background:linear-gradient(180deg,#fff,var(--volt-hi));border:1px solid rgba(53,232,255,.7);box-shadow:0 4px 14px rgba(53,232,255,.4);margin-top:-7.5px}
+.sl::-moz-range-track{height:5px;border-radius:9999px;background:rgba(255,255,255,.14)}
+.sl::-moz-range-thumb{width:20px;height:20px;border-radius:9999px;background:linear-gradient(180deg,#fff,var(--volt-hi));border:1px solid rgba(53,232,255,.7)}
+
+/* segmented */
+.segc{display:flex;gap:4px;background:rgba(255,255,255,.07);border:1px solid var(--edge);border-radius:9999px;padding:4px}
+.segc button{flex:1;height:30px;border:0;border-radius:9999px;background:transparent;color:var(--muted);font-family:var(--mono);font-size:10.5px;cursor:pointer;transition:all .15s linear;white-space:nowrap;overflow:hidden}
+.segc button.on{background:linear-gradient(180deg,var(--volt-hi),var(--volt));color:#04222B;font-weight:600;box-shadow:0 4px 16px rgba(53,232,255,.32)}
+.bk[data-bp="375"] .segc button[data-min="760"],.bk[data-bp="375"] .segc button[data-min="1180"]{display:none}
+.bk[data-bp="760"] .segc button[data-min="1180"]{display:none}
+.seg-note{letter-spacing:.12em}
+
+/* badge + avatar */
+.bav{position:relative;width:52px;height:52px;display:inline-flex}
+.bav .av{width:44px;height:44px}
+.av{border-radius:9999px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;font-weight:600;color:#04222B;background:linear-gradient(150deg,var(--volt-hi),#1FA8C4);flex:0 0 auto}
+.av.g2{background:linear-gradient(150deg,#FFD166,#FF8354)}
+.av.g3{background:linear-gradient(150deg,#84F2FF,#3EE8A8)}
+.av.g4{background:linear-gradient(150deg,#C792EA,#7C6BF0)}
+.av.more{background:rgba(255,255,255,.14);color:var(--ink);border:1px solid var(--edge)}
+.av.sm{width:28px;height:28px;font-size:10px}
+.av.md{width:40px;height:40px;font-size:13px}
+.av.lg{width:56px;height:56px;font-size:17px}
+.bdg{position:absolute;top:-2px;right:-2px;border-radius:9999px;font-family:var(--mono);font-size:9px;font-weight:700;font-style:normal;display:flex;align-items:center;justify-content:center;letter-spacing:.04em}
+.bdg.dot{width:11px;height:11px;background:var(--sig);border:2px solid rgba(8,17,28,.9);box-shadow:0 0 10px rgba(255,131,84,.8)}
+.bdg.num{min-width:20px;height:20px;padding:0 5px;background:linear-gradient(180deg,var(--volt-hi),var(--volt));color:#04222B;border:2px solid rgba(8,17,28,.9)}
+.bdg.txt{height:18px;padding:0 7px;background:linear-gradient(180deg,#FFD166,#FF8354);color:#3B1A00;border:2px solid rgba(8,17,28,.9);top:-4px}
+.brow-4{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.astack{display:flex;align-items:center}
+.astack .av{margin-right:-12px;border:2px solid rgba(255,255,255,.22)}
+.astack .av:last-child{margin-right:0}
+.asizes{display:flex;gap:12px;align-items:center}
+
+/* card grid */
+.gcards{display:grid;gap:10px;grid-template-columns:1fr}
+.bk[data-bp="760"] .gcards{grid-template-columns:1fr 1fr}
+.bk[data-bp="1180"] .gcards{grid-template-columns:1fr 1fr 1fr}
+.gcard{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px;transition:all .15s linear;cursor:pointer}
+.gcard:hover{background:rgba(255,255,255,.1);transform:translateY(-2px);border-color:rgba(53,232,255,.4)}
+.gcard p{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin:7px 0 2px}
+
+/* tabs */
+.tabc{display:flex;gap:2px;border-bottom:1px solid rgba(255,255,255,.12);overflow-x:auto;scrollbar-width:none}
+.tabc::-webkit-scrollbar{display:none}
+.tabc button{flex:0 0 auto;height:38px;padding:0 15px;border:0;background:transparent;color:var(--muted);font-family:var(--mono);font-size:11px;cursor:pointer;position:relative;transition:color .15s linear}
+.tabc button.on{color:var(--volt)}
+.tabc button.on::after{content:"";position:absolute;left:11px;right:11px;bottom:0;height:2px;background:linear-gradient(90deg,var(--volt-hi),var(--volt));border-radius:2px}
+.tab-more{margin-left:auto;flex:0 0 38px;padding:0}
+.tabpane{padding:14px 2px 2px}
+
+/* snackbar */
+.bd.snack{position:relative;min-height:150px;justify-content:flex-start;padding-bottom:72px}
+.snackbar{
+  position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:14px;
+  background:rgba(255,255,255,.13);border:1px solid rgba(53,232,255,.35);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  box-shadow:0 18px 44px -14px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.28);
+  font-family:var(--mono);font-size:11px;color:var(--ink);
+  opacity:0;transform:translateY(14px);transition:all .28s var(--ease);pointer-events:none;
+}
+.snackbar.show{opacity:1;transform:none;pointer-events:auto}
+.bk[data-bp="760"] .snackbar{left:26px;right:26px}
+.bk[data-bp="1180"] .snackbar{left:auto;right:0;width:292px}
+.sb-act{margin-left:auto;background:transparent;border:0;color:var(--volt);font-family:var(--mono);font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.08em}
+
+/* ---- footer ---- */
+.foot{position:relative;z-index:1;padding:90px 0 46px;margin-top:30px}
+.foot-card{padding:52px 46px 44px;border-radius:var(--r-lg)}
+.fmark{font-family:var(--mono);font-size:clamp(34px,6vw,68px);font-weight:700;letter-spacing:-.03em;line-height:1;background:linear-gradient(115deg,#fff 12%,var(--volt) 78%);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:26px}
+.fcolo{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.08em;line-height:2.4}
+.fcolo .last{color:var(--warn)}
+
+.js .reveal{opacity:0;transform:translateY(22px)}
+.js .reveal.in{opacity:1;transform:none;transition:opacity .55s var(--ease),transform .55s var(--ease);transition-delay:var(--rd,0ms)}
+
+@media (max-width:1080px){
+  .cab{grid-template-columns:1fr}
+  .cab-index{position:static;display:flex;flex-wrap:wrap;gap:2px 6px;max-height:none}
+  .cab-index .grp{width:100%;margin:10px 0 4px}
+  .naming{grid-template-columns:1fr;padding:30px 26px}
+  .alt-grid{grid-template-columns:1fr}
+  .head-grid,.comp-foot{grid-template-columns:1fr}
+  .comp-head .chip-row{margin-left:0}
+}
+@media (max-width:720px){
+  main{padding-top:150px}
+  .top,.bp{left:12px;right:12px;padding:0 12px}
+  .comp-inner{padding:22px 18px 24px}
+  .comp-head h2{font-size:21px}
+  .top nav a:not(.repo){display:none}
+  .bp-read{display:none}
+  .foot-card{padding:34px 22px}
+  .bk[data-bp="760"] .bk-grid{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  .b1,.b2,.b3,.pbar.ind i,.pspin{animation:none}
+  .js .reveal{transform:none}
+  .js .reveal.in{transition:opacity .2s linear}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-mesh" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div>
+  <div class="noise"></div>
+</div>
+
+<header class="top glass thin">
+  <div class="wm">MULLION · GLASS CABINET</div>
+  <div class="gchip"><span class="dot"></span>26 / 26 modules online</div>
+  <nav>
+    <a href="#naming">命名</a>
+    <a href="#c01">Adaptive 01–14</a>
+    <a href="#b15">Base 15–26</a>
+    <a class="repo" href="https://github.com/mullion-android/mullion">GitHub ↗</a>
+  </nav>
+</header>
+
+<div class="bp glass thin" id="bpRail">
+  <div class="bp-scale" id="bpScale">
+    <div class="bp-base"></div>
+    <div class="bp-end" style="left:0"></div>
+    <div class="bp-end" style="left:100%"></div>
+  </div>
+  <div class="bp-read" id="bpRead">Bp 840 · Expanded</div>
+</div>
+
+<main>
+
+<section class="cab-head" id="naming">
+  <div class="wrap">
+    <div class="gchip">Design reference · Android native framework · v1.0.0 · Apache-2.0 · minSdk 21</div>
+
+    <div class="naming glass reveal" style="margin-top:18px">
+      <div class="mark-wrap">
+        <svg class="mark" viewBox="0 0 160 160" width="152" height="152" role="img" aria-label="Mullion 窗棂标志">
+          <defs>
+            <linearGradient id="mgrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#84F2FF"/><stop offset="1" stop-color="#35E8FF"/>
+            </linearGradient>
+            <linearGradient id="mfill" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="rgba(255,255,255,.13)"/><stop offset="1" stop-color="rgba(255,255,255,.03)"/>
+            </linearGradient>
+          </defs>
+          <rect x="18" y="18" width="124" height="124" rx="30" fill="url(#mfill)" stroke="rgba(255,255,255,.22)" stroke-width="1.5"/>
+          <line x1="80" y1="18" x2="80" y2="142" stroke="url(#mgrad)" stroke-width="3" stroke-linecap="round"/>
+          <line x1="18" y1="62" x2="80" y2="62" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+          <line x1="80" y1="100" x2="142" y2="100" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+          <rect x="27" y="71" width="44" height="61" rx="10" fill="rgba(53,232,255,.15)" stroke="rgba(53,232,255,.5)" stroke-width="1"/>
+          <path d="M6 38 V6 H38" fill="none" stroke="rgba(255,255,255,.32)" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M122 6 H154 V38" fill="none" stroke="rgba(255,255,255,.32)" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M154 122 V154 H122" fill="none" stroke="rgba(255,255,255,.32)" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M38 154 H6 V122" fill="none" stroke="rgba(255,255,255,.32)" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <div class="lab faint">LOGO / 窗棂标</div>
+      </div>
+      <div class="name-wrap">
+        <div class="lab volt">Open-source naming / 开源命名</div>
+        <h1 class="wordmark">MULLION</h1>
+        <div class="phon">/ˈmʌl.jən/ · 窗棂 · 分格梃 · One window. Every pane.</div>
+        <p class="lead muted">一樘窗如何分格，由窗棂决定。Mullion 是把一扇大窗分成若干玻璃格的结构件——它不发光、不抢眼，却决定了窗格如何排布、如何收束、如何避让铰链。组件库之于应用界面，正是这根窗棂：320dp 到 1200dp 之间，一切分格由它定。</p>
+        <div class="chip-row" style="margin:18px 0 0">
+          <span class="gchip">dev.mullion:core</span>
+          <span class="gchip">dev.mullion:compose</span>
+          <span class="gchip">dev.mullion:view</span>
+          <span class="gchip">dev.mullion:material3</span>
+          <a class="gchip" href="https://github.com/mullion-android/mullion">GitHub ↗</a>
+        </div>
+        <div class="code-line">implementation("dev.mullion:core:1.0.0")</div>
+      </div>
+    </div>
+
+    <h2 class="claim">26 个组件，各自封在一块会呼吸的玻璃里。<br>14 个自适应件管「怎么分格」，12 个基础件管「格里长什么样」。</h2>
+
+    <div class="alt-grid">
+      <div class="naming-alt glass thin reveal">
+        <div class="lab faint" style="margin-bottom:12px">Candidates / 命名对照</div>
+        <table class="alt-tbl">
+          <thead><tr><th>候选</th><th>词义</th><th>取舍</th></tr></thead>
+          <tbody>
+            <tr class="pick"><td>Mullion ✓</td><td>窗棂 / 分格梃</td><td>结构决定排布 · 选定</td></tr>
+            <tr><td>Oriel</td><td>凸窗（三面采光）</td><td>形态优雅 · 语义偏软</td></tr>
+            <tr><td>Casement</td><td>平开窗（铰链开合）</td><td>直指折叠屏 · 范围偏窄</td></tr>
+            <tr><td>Haze</td><td>磨砂 / 玻璃雾面</td><td>呼应材质 · 缺结构义</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="usage glass thin reveal">
+        <div class="lab faint" style="margin-bottom:12px">Usage / 实测指引</div>
+        <div class="r"><b>01</b><span>点击格内 375 / 760 / 1180 改变窗口宽度</span></div>
+        <div class="r"><b>02</b><span>控件可直接交互：输入、拖动、开合、切换</span></div>
+        <div class="r"><b>03</b><span>zoom 读数为真实渲染缩放比，非截图</span></div>
+        <div class="r"><b>04</b><span>所有断点判定与 Compose API 一一对应</span></div>
+      </div>
+    </div>
+
+    <div class="count-strip">
+      <div class="c glass thin"><div class="lab faint">Modules</div><div class="val">26<span style="font-family:var(--mono);font-size:12px;color:var(--faint);margin-left:5px">个</span></div><div class="cap">Adaptive 14 + Base 12 · Compose 优先</div></div>
+      <div class="c glass thin"><div class="lab faint">Breakpoints</div><div class="val">5<span style="font-family:var(--mono);font-size:12px;color:var(--faint);margin-left:5px">档</span></div><div class="cap">320 / 480 / 600 / 840 / 1200 dp</div></div>
+      <div class="c glass thin"><div class="lab faint">Live demos</div><div class="val">100<span style="font-family:var(--mono);font-size:12px;color:var(--faint);margin-left:5px">%</span></div><div class="cap">真实 HTML 渲染 · 全部可交互</div></div>
+      <div class="c glass thin"><div class="lab faint">Baseline</div><div class="val">21<span style="font-family:var(--mono);font-size:12px;color:var(--faint);margin-left:5px">minSdk</span></div><div class="cap">编译期断点解析 · 运行时零反射</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap cab">
+  <aside class="cab-index glass thin" id="cabIndex">
+    <div class="lab grp">Adaptive Kit / 01–14</div>
+    <a href="#c01"><i>01</i>AdaptiveScaffold</a>
+    <a href="#c02"><i>02</i>DockedSheet</a>
+    <a href="#c03"><i>03</i>OrbitNav</a>
+    <a href="#c04"><i>04</i>SizeClassText</a>
+    <a href="#c05"><i>05</i>SearchBar</a>
+    <a href="#c06"><i>06</i>MultiPane</a>
+    <a href="#c07"><i>07</i>AdaptiveDialog</a>
+    <a href="#c08"><i>08</i>ResourceScaler</a>
+    <a href="#c09"><i>09</i>EdgeToEdgeBox</a>
+    <a href="#c10"><i>10</i>DraggableDivider</a>
+    <a href="#c11"><i>11</i>WindowSizeClass</a>
+    <a href="#c12"><i>12</i>FoldablePane</a>
+    <a href="#c13"><i>13</i>SharedAxisTransition</a>
+    <a href="#c14"><i>14</i>PermissionSheet</a>
+    <div class="lab grp">Base Kit / 15–26</div>
+    <a href="#b15"><i>15</i>Button</a>
+    <a href="#b16"><i>16</i>TextField</a>
+    <a href="#b17"><i>17</i>ProgressBar</a>
+    <a href="#b18"><i>18</i>Checkbox &amp; Radio</a>
+    <a href="#b19"><i>19</i>Switch</a>
+    <a href="#b20"><i>20</i>Slider</a>
+    <a href="#b21"><i>21</i>SegmentedControl</a>
+    <a href="#b22"><i>22</i>Badge</a>
+    <a href="#b23"><i>23</i>Avatar</a>
+    <a href="#b24"><i>24</i>Card</a>
+    <a href="#b25"><i>25</i>Tabs</a>
+    <a href="#b26"><i>26</i>Snackbar</a>
+  </aside>
+
+  <div class="cab-main" id="cabMain"></div>
+</div>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-card glass">
+      <div class="fmark">MULLION</div>
+      <div class="fcolo">
+        dev.mullion:core 1.0.0 · Kotlin 2.2 · Compose 1.9 · minSdk 21 · Apache-2.0<br>
+        26/26 组件 · 14 自适应件 + 12 基础件 · 每个实验格均为真实 HTML 渲染 · blur 深度即窗格层级<br>
+        One window. Every pane. / 一樘窗，处处合缝。<br>
+        <span class="last">Bp 840 · Expanded</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= breakpoint rail ================= */
+const BPS=[{dp:320,n:'Compact'},{dp:480,n:'Medium'},{dp:600,n:'Expanded'},{dp:840,n:'Large'},{dp:1200,n:'XL'}];
+const bpScale=document.getElementById('bpScale'), bpRead=document.getElementById('bpRead');
+BPS.forEach(function(b){
+  const el=document.createElement('div');
+  el.className='bp-tick'+(b.dp===840?' on':'');
+  el.style.left=(((b.dp-320)/880)*100)+'%';
+  el.innerHTML='<b>'+b.dp+'</b><i></i><s>'+b.n+'</s>';
+  el.addEventListener('mouseenter',function(){el.querySelector('i').style.background='var(--volt)';bpRead.textContent='Bp '+b.dp+' · '+b.n;});
+  el.addEventListener('mouseleave',function(){if(!el.dataset.locked)el.querySelector('i').style.background='';});
+  bpScale.appendChild(el);
+});
+
+/* ================= code helpers ================= */
+function hl(src){
+  const store=[];
+  let s=src.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  s=s.replace(/"[^"]*"/g,function(m){store.push('<span class="t-str">'+m+'</span>');return '\u0000'+(store.length-1)+'\u0000';});
+  s=s.replace(/\/\/[^\u0000]*/g,function(m){store.push('<span class="t-com">'+m+'</span>');return '\u0000'+(store.length-1)+'\u0000';});
+  s=s.replace(/\b(fun|val|var|if|else|return|is|object|class|when|true|false|null|private|internal|const|Modifier|@Composable)\b/g,'<span class="t-key">$1</span>');
+  s=s.replace(/\b(\d+(?:\.\d+)?)\b/g,'<span class="t-num">$1</span>');
+  s=s.replace(/\u0000(\d+)\u0000/g,function(_,i){return store[+i];});
+  return s;
+}
+function codeBlock(file, lines){
+  let h='<div class="codebox glass thin"><div class="code-h">'+file+'<button class="copy">COPY ⧉</button></div><div class="code-scroll"><div class="cal"><div class="ticks"></div><span style="top:8px">0</span><span style="top:230px">10</span></div><div class="code-body">';
+  lines.forEach(function(t,i){ h+='<div class="cl"><div class="ln">'+(i+1)+'</div><div class="cd">'+hl(t)+'</div></div>'; });
+  return h+'</div></div></div>';
+}
+
+/* ================= Adaptive Kit data ================= */
+const COMPS=[
+{id:'c01',n:'AdaptiveScaffold',tags:['Compose','Layout','Nav'],desc:'外层容器按断点决定导航形态：Compact 显示底部栏，Expanded 显示左轨，XL 展开抽屉。调用方不再书写任何宽度判定。',props:[['nav.type','BottomBar | Rail | Drawer'],['content.pane','SINGLE | DUAL | TRIPLE'],['motion.navMorph','240ms · cubic-bezier(.2,0,0,1)'],['insets.handle','statusBars + imePadding']],code:['@Composable','fun AdaptiveScaffold(','    topBar: @Composable () -> Unit,','    content: @Composable (PaddingValues) -> Unit,','{','    val bp = currentBreakpoint()','    Scaffold(','        topBar = topBar,','        bottomBar = { if (bp < Bp.Expanded) OrbitBar() },','        content = content,','    )','}'],demo:'d01'},
+{id:'c02',n:'DockedSheet',tags:['Compose','Foldable','Sheet'],desc:'面板永不跨缝绘制。铰链竖置时停靠到铰链任一侧，铰链横置或无铰链时降级为底部面板。开合过程中内容宽度连续。',props:[['hinge.axis','Vertical | Horizontal | None'],['dock.side','Start | End | Bottom'],['motion.dock','380ms · cubic-bezier(.22,1,.36,1)'],['min.pane','240dp']],code:['DockedSheet(','    state = rememberDockedSheetState(),','    hinge = windowInfo.hingeState,  // FLAT / HALF / TENT','    dockSide = if (hinge.axis == Vertical)','        DockSide.End else DockSide.Bottom,','    minPaneWidth = 240.dp,','    content = { SheetContent() },',')'],demo:'d02'},
+{id:'c03',n:'OrbitNav',tags:['Compose','Navigation'],desc:'一条导航数据源，三态渲染。切换阈值就是断点本身，不额外引入动画状态机；选中项在三态间保持同一语义。',props:[['items','List<NavEntry>'],['state','BottomBar | Rail | Drawer'],['motion.morph','240ms · shared axis'],['indicator','volt glow']],code:['OrbitNav(','    items = navItems,','    selected = current,','    onSelect = { navController.navigate(it.route) },',')','// 320–599dp BottomBar','// 600–839dp Rail','// 840dp+   Drawer'],demo:'d03'},
+{id:'c04',n:'SizeClassText',tags:['Compose','View','Type'],desc:'同一段文字按 sizeClass 阶梯缩放，而非按屏幕宽度线性缩放。行宽同时收束，保证每行字数落在可读区间。',props:[['type.compact','15sp / 62ch'],['type.expanded','17sp / 68ch'],['type.xl','19sp / 72ch'],['scaling','阶梯式 · 非线性']],code:['@Composable','fun SizeClassText(text: String) {','    val bp = currentBreakpoint()','    Text(','        text = text,','        fontSize = when (bp) {','            Bp.Compact, Bp.Medium -> 15.sp','            Bp.Expanded -> 17.sp','            else -> 19.sp','        },','    )','}'],demo:'d04'},
+{id:'c05',n:'SearchBar',tags:['Compose','Layout'],desc:'单行搜索 → 结果 + 预览双栏 → 加筛选列三栏。断点切换无跳变，查询状态在收束过程中始终保留。',props:[['layout.375','single row'],['layout.760','list + preview'],['layout.1180','list + preview + filters'],['motion.sweep','240ms']],code:['SearchLayout(','    query = query,','    results = results,','    onQueryChange = { query = it },','    modifier = Modifier.fillMaxSize(),',')','// paneStrategy(bp) 自动收束，无 if (width)'],demo:'d05'},
+{id:'c06',n:'MultiPane',tags:['Compose','Layout','Core'],desc:'列表 / 详情 / 预览三栏联动。1 栏时详情覆盖列表，2 栏时列表常驻，3 栏时预览落位。栏宽由 paneStrategy 唯一决定。',props:[['pane.375','list'],['pane.760','list + detail'],['pane.1180','list + detail + preview'],['gutter','24dp']],code:['MultiPane(','    pane = paneStrategy(currentBreakpoint()),','    list = { NoteList() },','    detail = { NoteDetail() },','    preview = { NotePreview() },',')','// 编译期解析栏数 · 布局耗时 0.8ms/帧'],demo:'d06'},
+{id:'c07',n:'AdaptiveDialog',tags:['Compose','Dialog'],desc:'紧凑态居中弹窗，宽态侧滑面板。同一份内容两种容器，焦点管理与返回键行为一致。',props:[['kind.compact','Centered dialog'],['kind.expanded','Side panel'],['scrim','blur 3px · 180ms'],['motion','340ms · cubic-bezier(.22,1,.36,1)']],code:['AdaptiveDialog(','    onDismiss = { open = false },','    kind = if (currentBreakpoint() < Bp.Expanded)','        DialogKind.Centered else DialogKind.SidePanel,','    content = { DialogContent() },',')'],demo:'d07'},
+{id:'c08',n:'ResourceScaler',tags:['View','Resource'],desc:'资源按断点取值，替代 values-w820dp 目录。数值在编译期解析，运行时零反射，可直接混入既有 View 工程。',props:[['spacing.section','48dp / 80dp / 120dp'],['type.display','32sp / 44sp / 56sp'],['resolution','编译期 · 无反射'],['migration','替换 values-w820dp']],code:['ResourceScaler.scaled(R.dimen.spacing_section)','// 320–599dp -> 48dp','// 600–839dp -> 80dp','// 840dp+   -> 120dp',''],demo:'d08'},
+{id:'c09',n:'EdgeToEdgeBox',tags:['Compose','View','Insets'],desc:'状态栏 / 手势条 / IME / 折叠屏 inset 一次接管。键盘弹出时内容自动上收，API 21 起行为一致。',props:[['insets','statusBars + navigationBars + ime'],['ime.push','134px · 380ms'],['padding','由 inset 值直接派生'],['api','21+ 一致']],code:['EdgeToEdgeBox(','    insets = LocalWindowInsets.current,','    content = { padding ->','        Column(Modifier.padding(padding)) { ... }','    },',')'],demo:'d09'},
+{id:'c10',n:'DraggableDivider',tags:['Compose','Layout'],desc:'分栏拖拽，最小栏宽强制钳制。越界不越界、不抖动，松手回弹 220ms，读数实时给出两栏实际宽度。',props:[['min.pane','120dp'],['clamp','强制 · 越界回弹'],['motion.bounce','220ms · spring'],['hit.area','11dp / pointer']],code:['DraggableDivider(','    minPaneWidth = 120.dp,','    split = split,','    onResize = { a, b -> split = a },',')','// 越界钳制 · 松手回弹 220ms'],demo:'d10'},
+{id:'c11',n:'WindowSizeClass',tags:['Compose','Core'],desc:'320 / 480 / 600 / 840 / 1200 五档断点对象。拖动下方游标即可看到断点归属切换，与运行时判定逻辑完全一致。',props:[['objects','Compact / Medium / Expanded / Large / XL'],['thresholds','320 / 480 / 600 / 840 / 1200 dp'],['api','currentBreakpoint()'],['resolution','编译期内联']],code:['val bp = currentBreakpoint()','when (bp) {','    Bp.Compact, Bp.Medium -> BottomBar()','    Bp.Expanded -> Rail()','    Bp.Large, Bp.XL -> Drawer()','}'],demo:'d11'},
+{id:'c12',n:'FoldablePane',tags:['Compose','Foldable'],desc:'铰链状态驱动布局策略：FLAT 全幅、HALF 避让上屏、TENT 呈现斜切。状态切换即刻重测量，不等下一帧。',props:[['states','FLAT | HALF_OPENED | TENT'],['hinge.safeGap','24dp'],['motion.remeasure','420ms'],['detect','WindowInfoTracker']],code:['FoldablePane(','    hinge = windowInfo.hingeState,','    onHingeChanged = { remeasure() },','    content = { PaneContent() },',')'],demo:'d12'},
+{id:'c13',n:'SharedAxisTransition',tags:['Compose','Motion'],desc:'跨断点切换用同一条轴变换：旧栏左移淡出、新栏右移切入。240ms 收束，容器尺寸变化不再闪白。',props:[['axis','X | Y | Z'],['duration','240ms · cubic-bezier(.4,0,.2,1)'],['enter','+28px fade-in'],['exit','-28px fade-out']],code:['SharedAxisTransition(','    targetState = bp,','    axis = Axis.X,','    durationMillis = 240,',') { Pane(it) }'],demo:'d13'},
+{id:'c14',n:'PermissionSheet',tags:['Compose','Sheet','Permissions'],desc:'紧凑态底部弹层、宽态锚定到触发按钮旁。同一份权限清单，两种落位，语义与焦点顺序不变。',props:[['anchor.compact','Bottom sheet'],['anchor.wide','Trigger-anchored panel'],['motion','340ms · cubic-bezier(.22,1,.36,1)'],['focus','保持原触发点']],code:['PermissionSheet(','    permission = Permission.Camera,','    anchor = if (currentBreakpoint() < Bp.Expanded)','        Anchor.Bottom else Anchor.Trigger,','    onGranted = { ... },',')'],demo:'d14'}
+];
+
+function navDots(count,active){let h='';for(let i=0;i<count;i++)h+='<div class="it'+(i===active?' on':'')+'"></div>';return h;}
+function drawerItems(active){return ['工作台','消息','设备','设置'].map(function(x,i){return '<div class="it'+(i===active?' on':'')+'">'+x+'</div>';}).join('');}
+function tiles(n){let h='';for(let i=0;i<n;i++)h+='<div class="dk-tile"><span class="dot"></span></div>';return h;}
+
+const DEMOS={
+d01:function(){return '<div class="dk d01" data-bp="375" style="width:375px"><div class="dk-bar"><b>AdaptiveScaffold</b><span class="bp-tag" data-l375="Compact · BottomBar" data-l760="Expanded · Rail" data-l1180="XL · Drawer">Compact · BottomBar</span></div><div class="dk-main"><div class="dk-rail">'+navDots(4,0)+'</div><div class="dk-drawer">'+drawerItems(0)+'</div><div class="dk-col"><div class="dk-content">'+tiles(3)+'</div><div class="dk-nav">'+navDots(4,0)+'</div></div></div><div class="dk-cap">nav 形态随断点切换 · 内容区不重建</div></div>';},
+d02:function(){return '<div class="dk d02" data-bp="760" data-fold="side" style="width:760px"><div class="dk-bar"><b>DockedSheet</b><span class="fold-state">Hinge: HALF_OPENED</span></div><div class="d02-stage"><div class="pane-main"><div class="dk-l w"></div><div class="dk-l m"></div><div class="dk-l s"></div><div class="dk-l m"></div><div class="dk-l x"></div></div><div class="dk-hinge"></div><div class="d02-sheet"><div class="lab volt" style="margin-bottom:10px">Sheet content</div><div class="dk-l w"></div><div class="dk-l m"></div><div class="dk-l s"></div><button class="dk-btn" style="margin-top:12px">Confirm</button></div></div><div class="dk-cap">铰链竖置停靠 End · 横置降级 Bottom · 面板永不跨缝</div></div>';},
+d03:function(){return '<div class="dk d03" data-bp="375" style="width:375px"><div class="dk-bar"><b>OrbitNav</b><span class="bp-tag" data-l375="BottomBar" data-l760="Rail" data-l1180="Drawer">BottomBar</span></div><div class="dk-main"><div class="dk-rail">'+navDots(4,1)+'</div><div class="dk-drawer">'+drawerItems(1)+'</div><div class="dk-col"><div class="dk-content">'+tiles(2)+'</div><div class="dk-nav">'+navDots(4,1)+'</div></div></div><div class="dk-cap">一份数据源 · 三态渲染 · 选中态语义一致</div></div>';},
+d04:function(){return '<div class="dk d04" data-bp="375" style="width:375px"><div class="dk-bar"><b>SizeClassText</b><span class="bp-tag" data-l375="15sp / 62ch" data-l760="17sp / 68ch" data-l1180="19sp / 72ch">15sp / 62ch</span></div><div class="measure"><p>同一段文字，按 sizeClass 阶梯缩放，而不是按屏幕宽度线性拉伸。行宽同时收束，保证每行字数落在可读区间；段落节奏不因窗口尺寸变化而崩坏。</p><div class="dk-l w" style="margin-top:16px"></div><div class="dk-l m"></div><div class="dk-l s"></div></div><div class="meta"><div><div class="lab faint">Font</div><div class="val fs-val">15<span style="font-family:var(--mono);font-size:11px;color:var(--faint)">sp</span></div></div><div><div class="lab faint">Measure</div><div class="val ms-val">62<span style="font-family:var(--mono);font-size:11px;color:var(--faint)">ch</span></div></div><div><div class="lab faint">Scaling</div><div class="val" style="color:var(--volt)">阶梯</div></div></div></div>';},
+d05:function(){return '<div class="dk d05" data-bp="375" style="width:375px"><div class="dk-bar"><b>SearchBar</b><span class="bp-tag" data-l375="single row" data-l760="list + preview" data-l1180="+ filters">single row</span></div><div class="sr-wrap"><div class="dk-col"><div class="sr-bar"><div class="ph">搜索设备 / 型号 / 断点…</div></div><div class="sr-list"><div class="sr-item on">Pixel 8 Pro · 412dp</div><div class="sr-item">Galaxy Z Fold5 · 344dp</div><div class="sr-item">Pixel Tablet · 840dp</div><div class="sr-item">Xiaomi Pad 6 · 800dp</div><div class="sr-item">Galaxy Tab S9 · 820dp</div></div></div><div class="sr-prev"><div class="lab volt" style="margin-bottom:12px">Preview</div><div class="dk-l w"></div><div class="dk-l m"></div><div class="dk-l s"></div><div class="dk-l m"></div></div><div class="sr-filters"><div class="lab faint" style="margin-bottom:12px">Filters</div><div class="dk-l w"></div><div class="dk-l m"></div><div class="dk-l w"></div><div class="dk-l s"></div></div></div></div>';},
+d06:function(){return '<div class="dk d06" data-bp="375" style="width:375px"><div class="dk-bar"><b>MultiPane</b><span class="bp-tag" data-l375="1 栏" data-l760="2 栏" data-l1180="3 栏">1 栏</span></div><div class="mp"><div class="mp-list"><div class="lab faint" style="margin-bottom:10px">List</div><div class="row on">Note 01 · 折叠屏策略</div><div class="row">Note 02 · 分栏阈值</div><div class="row">Note 03 · 铰链避让</div><div class="row">Note 04 · IME inset</div></div><div class="mp-detail"><div class="lab faint" style="margin-bottom:10px">Detail</div><div class="dk-l w"></div><div class="dk-l m"></div><div class="dk-l s"></div><div class="dk-l w"></div><div class="dk-l x"></div></div><div class="mp-prev"><div class="lab faint" style="margin-bottom:10px">Preview</div><div class="dk-tile" style="height:120px"></div><div class="dk-l m" style="margin-top:12px"></div><div class="dk-l s"></div></div></div><div class="dk-cap">paneStrategy(bp) 编译期解析栏数</div></div>';},
+d07:function(){return '<div class="dk d07" data-bp="375" data-open="1" style="width:375px"><div class="dk-bar"><b>AdaptiveDialog</b><span class="bp-tag" data-l375="Centered" data-l760="Centered" data-l1180="Side panel">Centered</span></div><div class="d07-stage"><div class="d07-body">'+tiles(3)+'</div><div class="dk-scrim"></div><div class="d07-modal"><div class="lab volt" style="margin-bottom:12px">Dialog content</div><div class="dk-l w"></div><div class="dk-l m"></div><div class="dk-l s"></div><div style="display:flex;gap:8px;margin-top:16px"><button class="dk-btn">确定</button><button class="dk-btn ghost">取消</button></div></div></div></div>';},
+d08:function(){return '<div class="dk d08" data-bp="375" style="width:375px"><div class="dk-bar"><b>ResourceScaler</b><span class="bp-tag bucket" data-l375="values-default" data-l760="values-w600dp" data-l1180="values-w840dp">values-default</span></div><div class="rs"><div class="rs-row"><div class="k">spacing.section</div><div class="rs-bar" data-v375="48" data-v760="80" data-v1180="120" style="width:48px"></div><div class="v">48dp</div></div><div class="rs-row"><div class="k">type.display</div><div class="rs-bar" data-v375="32" data-v760="44" data-v1180="56" style="width:32px"></div><div class="v">32sp</div></div><div class="rs-row"><div class="k">pane.margin</div><div class="rs-bar" data-v375="16" data-v760="24" data-v1180="32" style="width:16px"></div><div class="v">16dp</div></div><div class="rs-row"><div class="k">pane.gutter</div><div class="rs-bar" data-v375="12" data-v760="24" data-v1180="24" style="width:12px"></div><div class="v">12dp</div></div></div><div class="dk-cap">编译期解析 · 运行时零反射 · 可混入 View 工程</div></div>';},
+d09:function(){return '<div class="dk d09" data-bp="760" data-ime="0" style="width:760px"><div class="dk-bar"><b>EdgeToEdgeBox</b><span class="bp-tag">insets 自动接管</span></div><div class="d09-screen"><div class="band status">STATUS BAR · 28px</div><div class="d09-content"><div class="dk-l w"></div><div class="dk-l m"></div><div class="dk-l s"></div><div class="dk-l w"></div><div class="dk-l x"></div><div class="dk-note">content padding = inset</div></div><div class="band ime">IME · KEYBOARD 110px</div><div class="band navbar">GESTURE NAV · 24px</div></div></div>';},
+d10:function(){return '<div class="dk d10" data-bp="760" style="width:760px"><div class="dk-bar"><b>DraggableDivider</b><span class="bp-tag">min pane 120px</span></div><div class="d10-wrap"><div class="pA"><div class="lab faint" style="margin-bottom:10px">Pane A</div><div class="dk-l w"></div><div class="dk-l m"></div><div class="dk-l s"></div></div><div class="d10-div" id="d10div"></div><div class="pB"><div class="lab faint" style="margin-bottom:10px">Pane B</div><div class="dk-l w"></div><div class="dk-l m"></div></div></div><div class="readout" id="d10read">SPLIT 42% / 58% · A 319px · B 441px · CLAMP OK</div></div>';},
+d11:function(){return '<div class="dk d11" data-bp="760" style="width:760px"><div class="dk-bar"><b>WindowSizeClass</b><span class="bp-tag">5 档断点对象</span></div><div class="d11-wrap"><div class="meter"><div class="seg" style="left:0;width:18.2%"><span>320</span></div><div class="seg" style="left:18.2%;width:18.2%"><span>480</span></div><div class="seg" style="left:36.4%;width:27.3%"><span>600</span></div><div class="seg" style="left:63.7%;width:27.3%"><span>840</span></div><div class="seg" style="left:91%;width:9%"><span>1200</span></div><div class="cursor" id="d11cur" style="left:63.7%"><b>840 · Large</b></div></div><input type="range" id="d11range" min="320" max="1200" value="840" step="1"><div class="status"><div><div class="lab faint">currentBreakpoint()</div><div class="val" id="d11bp">Large</div></div><div><div class="lab faint">window width</div><div class="val" id="d11w">840<span style="font-family:var(--mono);font-size:11px;color:var(--faint)">dp</span></div></div><div><div class="lab faint">pane</div><div class="val" id="d11pane" style="color:var(--volt)">2 栏</div></div></div></div></div>';},
+d12:function(){return '<div class="dk d12" data-bp="760" data-fold="flat" style="width:760px"><div class="dk-bar"><b>FoldablePane</b><span class="bp-tag" data-l375="FLAT" data-l760="HALF_OPENED" data-l1180="TENT">HALF_OPENED</span></div><div class="d12-wrap"><div class="leaf l"><div class="lab faint" style="margin-bottom:10px">Leaf A</div><div class="dk-l w"></div><div class="dk-l m"></div><div class="dk-l s"></div></div><div class="dk-hinge"></div><div class="leaf r"><div class="lab faint" style="margin-bottom:10px">Leaf B</div><div class="dk-l w"></div><div class="dk-l m"></div></div><div class="d12-msg">HINGE OCCUPIED · 跨缝禁止绘制</div></div><div class="dk-cap">状态切换即刻重测量 · 不等下一帧</div></div>';},
+d13:function(){return '<div class="dk d13" data-bp="375" style="width:375px"><div class="dk-bar"><b>SharedAxisTransition</b><span class="bp-tag">240ms · axis X</span></div><div class="ax"><div class="ax-pane on" id="ax1"><div class="lab volt" style="margin-bottom:12px">Pane A · Compact</div><div class="dk-l w"></div><div class="dk-l m"></div><div class="dk-l s"></div></div><div class="ax-pane off" id="ax2"><div class="lab volt" style="margin-bottom:12px">Pane B · Expanded</div><div class="dk-l w"></div><div class="dk-l m"></div></div></div><div class="toks"><span>ENTER <b>+28px fade</b></span><span>EXIT <b>-28px fade</b></span><span>EASE <b>cubic-bezier(.4,0,.2,1)</b></span></div></div>';},
+d14:function(){return '<div class="dk d14" data-bp="375" data-open="1" style="width:375px"><div class="dk-bar"><b>PermissionSheet</b><span class="bp-tag" data-l375="Bottom sheet" data-l760="Anchored" data-l1180="Anchored">Bottom sheet</span></div><div class="d14-stage"><button class="dk-btn trigger">申请相机权限</button><div class="psheet bottom"><div class="lab volt" style="margin-bottom:12px">权限清单</div><div class="perm-row"><i></i>相机 · CAMERA</div><div class="perm-row"><i></i>位置 · ACCESS_FINE_LOCATION</div><div class="perm-row"><i></i>通知 · POST_NOTIFICATIONS</div><div style="display:flex;gap:8px;margin-top:14px"><button class="dk-btn">全部允许</button><button class="dk-btn ghost">仅本次</button></div></div></div></div>';}
+};
+
+/* ================= build adaptive cabinet ================= */
+const cabMain=document.getElementById('cabMain');
+COMPS.forEach(function(c,idx){
+  const s=document.createElement('section');
+  s.className='comp reveal'; s.id=c.id;
+  s.style.setProperty('--rd',(idx%4)*60+'ms');
+  s.innerHTML=
+   '<div class="comp-inner glass">'+
+     '<div class="comp-head"><div class="lab volt">Component '+(idx+1<10?'0':'')+(idx+1)+'</div><h2>'+c.n+'</h2>'+
+     '<div class="chip-row">'+c.tags.map(function(t){return '<span class="gchip">'+t+'</span>';}).join('')+'</div></div>'+
+     '<p class="comp-desc">'+c.desc+'</p>'+
+     '<div class="tray glass thin">'+
+       '<div class="tray-ctl">'+
+         '<div class="pair-toggle"><button data-w="375">375</button><button data-w="760" class="on">760</button><button data-w="1180">1180</button></div>'+
+         (c.demo==='d02'?'<button class="mini-act" data-act="fold2">铰链 FLAT / HALF</button>':'')+
+         (c.demo==='d07'||c.demo==='d14'?'<button class="mini-act" data-act="open">开 / 关</button>':'')+
+         (c.demo==='d09'?'<button class="mini-act" data-act="ime">弹出键盘</button>':'')+
+         (c.demo==='d12'?'<button class="mini-act" data-act="fold12">FLAT / HALF / TENT</button>':'')+
+         (c.demo==='d13'?'<button class="mini-act" data-act="axis">切换轴</button>':'')+
+         '<div class="zoom">zoom <b class="zoom-val">1.00×</b> · '+(idx+1<10?'0':'')+(idx+1)+' / 26</div>'+
+       '</div>'+
+       '<div class="tray-stage">'+DEMOS[c.demo]()+'</div>'+
+     '</div>'+
+     '<div class="comp-foot">'+
+       '<div class="props glass thin"><div class="lab hd">Properties / 属性</div>'+c.props.map(function(p){return '<div class="r"><div class="k">'+p[0]+'</div><div class="v">'+p[1]+'</div></div>';}).join('')+'</div>'+
+       codeBlock(c.n+'.kt', c.code)+
+     '</div>'+
+   '</div>';
+  cabMain.appendChild(s);
+});
+
+/* ================= Base Kit ================= */
+const BASE=[
+{id:'b15',n:'Button',tag:'Compose',foot:'variant 4 · size 36/44/52 · motion 120ms · ripple 依平台',
+ demo:'<div class="brw grow"><button class="bb fill">主要操作</button><button class="bb tonal">次要操作</button><button class="bb outline">描边</button><button class="bb text">文本</button></div><div class="brw"><button class="bb fill sm">S 36</button><button class="bb fill md">M 44</button><button class="bb fill lg">L 52</button><button class="bb fill icon">+</button></div>'},
+{id:'b16',n:'TextField',tag:'Compose',foot:'state 3 · h 42 · radius 12 · focus glow 3px',
+ demo:'<div class="bd fields" style="min-height:0"><label class="bf"><span>设备名称</span><input type="text" placeholder="Pixel 8 Pro"></label><label class="bf"><span>断点阈值</span><input type="text" value="840dp"></label><label class="bf err"><span>包名</span><input type="text" value="dev.bench."><em>包名需以 dev.mullion 开头</em></label><label class="bf"><span>搜索</span><input type="search" placeholder="搜索组件…"></label></div>'},
+{id:'b17',n:'ProgressBar',tag:'Compose',foot:'linear | circular · track h 6 · loop 1300ms',
+ demo:'<div class="pl-row"><span class="pl-l">DETERMINATE</span><div class="pbar det"><i style="width:62%"></i></div><span class="pv">62%</span></div><div class="pl-row"><span class="pl-l">INDETERMINATE</span><div class="pbar ind"><i></i></div></div><div class="pl-row"><span class="pl-l">CIRCULAR</span><div class="pspin"></div><button class="mini-act ppause">PAUSE</button></div>'},
+{id:'b18',n:'Checkbox & Radio',tag:'Compose',foot:'hit target 48dp · check 160ms · state 4',
+ demo:'<div class="bd checks" style="min-height:0"><label class="bc"><input type="checkbox" checked><i></i><span>横屏适配</span></label><label class="bc"><input type="checkbox"><i></i><span>铰链避让</span></label><label class="bc"><input type="checkbox" checked><i></i><span>Edge-to-Edge</span></label><label class="bc radio"><input type="radio" name="bpz" checked><i></i><span>Compact</span></label><label class="bc radio"><input type="radio" name="bpz"><i></i><span>Expanded</span></label><label class="bc radio"><input type="radio" name="bpz"><i></i><span>XL</span></label></div>'},
+{id:'b19',n:'Switch',tag:'Compose',foot:'track 52×30 · thumb 22 · travel 22px · 180ms',
+ demo:'<label class="brow"><span>自动收束</span><input type="checkbox" class="sw" checked></label><label class="brow"><span>显示标定网格</span><input type="checkbox" class="sw"></label><label class="brow"><span>开发者模式</span><input type="checkbox" class="sw" checked></label>'},
+{id:'b20',n:'Slider',tag:'Compose',foot:'track 5 · thumb 20 · hit 22 · step 1dp',
+ demo:'<div class="bs-row"><span class="bs-k">PANE.GUTTER</span><input type="range" class="sl" min="0" max="48" value="24" data-unit="dp"><span class="rv">24dp</span></div><div class="bs-row"><span class="bs-k">TYPE.DISPLAY</span><input type="range" class="sl" min="24" max="72" value="44" data-unit="sp"><span class="rv">44sp</span></div><div class="bs-row"><span class="bs-k">GLASS ALPHA</span><input type="range" class="sl" min="0" max="100" value="88" data-unit="%"><span class="rv">88%</span></div>'},
+{id:'b21',n:'SegmentedControl',tag:'Compose',foot:'段数 2|3|5 · h 30 · 150ms · 随断点增长',
+ demo:'<div class="segc"><button data-min="375" class="on">Compact</button><button data-min="375">Medium</button><button data-min="760">Expanded</button><button data-min="1180">Large</button><button data-min="1180">XL</button></div><div class="lab seg-note faint">段数随断点增长：2 → 3 → 5</div>'},
+{id:'b22',n:'Badge',tag:'Compose',foot:'dot 11 · num 20 · text h 18 · glow 8px',
+ demo:'<div class="brow-4"><div class="bav"><span class="av">L</span><i class="bdg dot"></i></div><div class="bav"><span class="av">M</span><i class="bdg num bp-760">3</i></div><div class="bav"><span class="av">D</span><i class="bdg txt bp-1180">NEW</i></div><div class="bav"><span class="av">S</span><i class="bdg num bp-760">99+</i></div></div>'},
+{id:'b23',n:'Avatar',tag:'Compose',foot:'S 28 / M 40 / L 56 · stack overlap -12 · 字母回退',
+ demo:'<div class="astack"><span class="av md">A</span><span class="av md g2">B</span><span class="av md g3 bp-760">C</span><span class="av md g4 bp-1180">D</span><span class="av md more bp-760">+2</span></div><div class="asizes"><span class="av sm">S</span><span class="av md">M</span><span class="av lg">L</span></div>'},
+{id:'b24',n:'Card',tag:'Compose',foot:'radius 12 · min-h 120 · hover -2px · 1|2|3 栏',
+ demo:'<div class="gcards"><div class="gcard"><div class="lab volt">Compact</div><p>375dp 单栏收束</p><div class="dk-l w"></div></div><div class="gcard"><div class="lab volt">Expanded</div><p>760dp 双栏分格</p><div class="dk-l m"></div></div><div class="gcard"><div class="lab volt">XL</div><p>1180dp 三栏并列</p><div class="dk-l s"></div></div></div>'},
+{id:'b25',n:'Tabs',tag:'Compose',foot:'h 38 · indicator 2px · scroll → fixed → +menu',
+ demo:'<div class="tabc"><button class="on">规格</button><button>组件</button><button>矩阵</button><button>性能</button><button>接入</button><button class="tab-more bp-1180">⋯</button></div><div class="tabpane"><div class="lab volt tablabel">规格</div><div class="dk-l w" style="margin-top:10px"></div><div class="dk-l m"></div></div>'},
+{id:'b26',n:'Snackbar',tag:'Compose',foot:'h 52 · radius 14 · auto-dismiss 3200ms · 带撤销',
+ demo:'<div class="bd snack" style="min-height:0"><button class="bb outline" id="snackBtn">触发 Snackbar</button><div class="snackbar" id="snackbar"><span>已切换到 Bp 840 · Large</span><button class="sb-act">撤销</button></div></div>'}
+];
+
+const BASE_SEC=document.createElement('section');
+BASE_SEC.className='basekit reveal';
+BASE_SEC.id='basekit';
+BASE_SEC.innerHTML=
+ '<div class="comp-inner glass">'+
+   '<div class="comp-head"><div class="lab volt">Base Kit · 15–26</div><h2>基础件工作台</h2>'+
+   '<div class="chip-row"><span class="gchip">12 modules</span><span class="gchip">shared ruler</span><span class="gchip">live controls</span></div></div>'+
+   '<p class="comp-desc">十二个基础件共享同一把标尺。切换 375 / 760 / 1180，输入框收列、进度条换形、分段器长段、徽标升级、卡片分栏——一次按键，整面墙同时收束。</p>'+
+   '<div class="bk glass thin" id="basekit-wrap" data-bp="760">'+
+     '<div class="bk-bar">'+
+       '<div class="pair-toggle"><button data-w="375">375</button><button data-w="760" class="on">760</button><button data-w="1180">1180</button></div>'+
+       '<div class="gchip">Base Kit · 共享标尺</div>'+
+       '<div class="zoom">viewport <b class="bk-vp">760dp</b> · grid <b class="bk-cols">2 col</b> · 12 / 26</div>'+
+     '</div>'+
+     '<div class="bk-stage"><div class="bk-grid">'+
+       BASE.map(function(b,i){
+         return '<div class="bcard reveal" id="'+b.id+'" style="--rd:'+((i%3)*70)+'ms">'+
+           '<div class="bcard-h"><span class="num">'+(15+i)+'</span><span class="nm">'+b.n+'</span><span class="tag">'+b.tag+'</span></div>'+
+           '<div class="bd">'+b.demo+'</div>'+
+           '<div class="bcard-f">'+b.foot+'</div>'+
+         '</div>';
+       }).join('')+
+     '</div></div>'+
+   '</div>'+
+   '<div class="comp-foot" style="margin-top:22px">'+
+     '<div class="props glass thin"><div class="lab hd">Shared tokens / 通用令牌</div>'+
+       '<div class="r"><div class="k">radius.control</div><div class="v">9999 (pill) / 12 (field)</div></div>'+
+       '<div class="r"><div class="k">motion.micro</div><div class="v">120ms · linear</div></div>'+
+       '<div class="r"><div class="k">motion.state</div><div class="v">180ms · cubic-bezier(.22,1,.36,1)</div></div>'+
+       '<div class="r"><div class="k">focus.ring</div><div class="v">3px · rgba(53,232,255,.18)</div></div>'+
+       '<div class="r"><div class="k">hit.target</div><div class="v">48dp · 恒定</div></div>'+
+       '<div class="r"><div class="k">glass.blur</div><div class="v">12px (chip) → 26px (panel)</div></div>'+
+     '</div>'+
+     codeBlock('MullionBasics.kt',[
+       '// dev.mullion:core:1.0.0 — 基础件',
+       'MullionButton(','    text = "主要操作",','    variant = Variant.Filled,      // Tonal / Outlined / Text','    size = ButtonSize.M,           // S 36 / M 44 / L 52','    onClick = { ... },',')',
+       'MullionTextField(','    value = query,','    onValueChange = { query = it },','    label = "搜索组件",','    state = FieldState.Default,    // Error / Disabled',')',
+       'MullionProgressBar(','    progress = 0.62f,              // null = indeterminate','    shape = ProgressShape.Linear,  // Circular','    label = "构建中",',')'
+     ])+
+   '</div>'+
+   '<div class="tw glass thin" style="margin-top:22px"><table>'+
+     '<thead><tr><th>#</th><th>Component</th><th>变体</th><th>尺寸</th><th>自适应行为</th></tr></thead><tbody>'+
+     [
+      ['15','Button','Filled / Tonal / Outlined / Text','S 36 / M 44 / L 52','2 列全宽 → 4 列 → + 图标组'],
+      ['16','TextField','Filled / Outlined / Error','h 42','1 列 → 2 列 → 行内组'],
+      ['17','ProgressBar','Determinate / Indeterminate / Circular','track h 6','环形 → 线性读数 → + 标签'],
+      ['18','Checkbox & Radio','默认 / 半选 / 禁用','触达 48dp','竖排 → 2 列 → 3 列'],
+      ['19','Switch','默认 / 关闭','52 × 30','列表 → 2 列 → 网格'],
+      ['20','Slider','单游标 / 双游标','track 5 / thumb 20','单 → + 读数 → 双游标 + 刻度'],
+      ['21','SegmentedControl','2 / 3 / 5 段','h 30','段数随断点增长'],
+      ['22','Badge','Dot / Number / Text','11 / 20 / 18','dot → + 数字 → + 文字'],
+      ['23','Avatar','单体 / 群组 / 字母回退','28 / 40 / 56','单 → + 群组 → + 计数'],
+      ['24','Card','基础 / 带操作','min-h 120','1 列 → 2 列 → 3 列'],
+      ['25','Tabs','5 项 / 溢出','h 38','滚动 → 固定 → + 溢出菜单'],
+      ['26','Snackbar','带撤销','h 52','全宽底部 → 内缩 → 右下锚定']
+     ].map(function(r){
+       return '<tr><td class="on">'+r[0]+'</td><td class="name">'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td></tr>';
+     }).join('')+
+     '</tbody></table></div>'+
+ '</div>';
+cabMain.appendChild(BASE_SEC);
+
+/* ================= tray engine ================= */
+function fitTray(tray){
+  const stage=tray.querySelector('.tray-stage'), dk=tray.querySelector('.dk'), zoomEl=tray.querySelector('.zoom-val');
+  if(!stage||!dk) return;
+  const avail=stage.clientWidth, w=parseFloat(dk.style.width)||760, k=Math.min(1, avail/w);
+  dk.style.transform='scale('+k+')';
+  stage.style.height=Math.ceil(dk.offsetHeight*k)+'px';
+  if(zoomEl) zoomEl.textContent=k.toFixed(2)+'×';
+}
+function applyBp(tray,bp){
+  const dk=tray.querySelector('.dk');
+  dk.dataset.bp=bp; dk.style.width=bp+'px';
+  tray.querySelectorAll('[data-l'+bp+']').forEach(function(el){ el.textContent=el.getAttribute('data-l'+bp); });
+  tray.querySelectorAll('.rs-bar').forEach(function(b){
+    const v=b.getAttribute('data-v'+bp);
+    if(v){ b.style.width=v+'px'; b.parentElement.querySelector('.v').textContent=v+(b.previousElementSibling.textContent.indexOf('type')>-1?'sp':'dp'); }
+  });
+  const fs=tray.querySelector('.fs-val'), ms=tray.querySelector('.ms-val');
+  if(fs){ const m={375:['15','62'],760:['17','68'],1180:['19','72']}[bp];
+    fs.innerHTML=m[0]+'<span style="font-family:var(--mono);font-size:11px;color:var(--faint)">sp</span>';
+    ms.innerHTML=m[1]+'<span style="font-family:var(--mono);font-size:11px;color:var(--faint)">ch</span>'; }
+  const ps=tray.querySelector('.psheet');
+  if(ps){ ps.classList.toggle('bottom',bp==='375'); ps.classList.toggle('anchor',bp!=='375'); }
+  fitTray(tray);
+}
+document.querySelectorAll('.tray').forEach(function(tray){
+  tray.querySelectorAll('[data-w]').forEach(function(b){
+    b.addEventListener('click',function(){
+      tray.querySelectorAll('[data-w]').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); applyBp(tray,b.dataset.w);
+    });
+  });
+  const dk=tray.querySelector('.dk');
+  tray.querySelectorAll('[data-act]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      const a=btn.dataset.act;
+      if(a==='open'){ dk.dataset.open = dk.dataset.open==='1'?'0':'1'; }
+      if(a==='ime'){ dk.dataset.ime = dk.dataset.ime==='1'?'0':'1'; btn.classList.toggle('on-volt'); }
+      if(a==='fold2'){ dk.dataset.fold = dk.dataset.fold==='side'?'bottom':'side';
+        dk.querySelector('.fold-state').textContent = dk.dataset.fold==='side'?'Hinge: HALF_OPENED':'Hinge: FLAT'; }
+      if(a==='fold12'){ const order=['flat','half','tent']; dk.dataset.fold=order[(order.indexOf(dk.dataset.fold)+1)%3]; }
+      if(a==='axis'){
+        const p1=dk.querySelector('#ax1'), p2=dk.querySelector('#ax2');
+        const one=p1.classList.contains('on');
+        p1.className='ax-pane '+(one?'off':'on'); p2.className='ax-pane '+(one?'on':'off');
+      }
+      fitTray(tray);
+    });
+  });
+  const init=tray.querySelector('[data-w].on');
+  applyBp(tray, init? init.dataset.w : '760');
+  window.addEventListener('resize',function(){fitTray(tray);});
+  if('ResizeObserver' in window){
+    let last=0;
+    new ResizeObserver(function(){ const h=dk.offsetHeight; if(h!==last){last=h;fitTray(tray);} }).observe(dk);
+  }
+});
+
+/* ================= base kit engine ================= */
+(function(){
+  const bk=document.getElementById('basekit-wrap'); if(!bk) return;
+  const vp=bk.querySelector('.bk-vp'), cols=bk.querySelector('.bk-cols');
+  const M={'375':['375dp','1 col'],'760':['760dp','2 col'],'1180':['1180dp','3 col']};
+  bk.querySelectorAll('.pair-toggle [data-w]').forEach(function(b){
+    b.addEventListener('click',function(){
+      bk.querySelectorAll('.pair-toggle [data-w]').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); bk.dataset.bp=b.dataset.w;
+      if(vp) vp.textContent=M[b.dataset.w][0];
+      if(cols) cols.textContent=M[b.dataset.w][1];
+    });
+  });
+  bk.querySelectorAll('.segc').forEach(function(s){
+    s.addEventListener('click',function(e){
+      const b=e.target.closest('button'); if(!b) return;
+      s.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on');
+    });
+  });
+  bk.querySelectorAll('.sl').forEach(function(sl){
+    const out=sl.parentElement.querySelector('.rv');
+    function upd(){ if(out) out.textContent=sl.value+(sl.dataset.unit||''); }
+    sl.addEventListener('input',upd); upd();
+  });
+  bk.querySelectorAll('.tabc').forEach(function(t){
+    const pane=t.parentElement.querySelector('.tablabel');
+    t.addEventListener('click',function(e){
+      const b=e.target.closest('button'); if(!b||b.classList.contains('tab-more')) return;
+      t.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); if(pane) pane.textContent=b.textContent;
+    });
+  });
+  const sb=document.getElementById('snackbar'), sbtn=document.getElementById('snackBtn');
+  if(sb&&sbtn){
+    let timer=null;
+    sbtn.addEventListener('click',function(){
+      sb.classList.add('show'); clearTimeout(timer);
+      timer=setTimeout(function(){sb.classList.remove('show');},3200);
+    });
+    sb.querySelector('.sb-act').addEventListener('click',function(){clearTimeout(timer);sb.classList.remove('show');});
+  }
+  const bar=bk.querySelector('.pbar.det i'), val=bk.querySelector('.pv'), pp=bk.querySelector('.ppause');
+  if(bar){
+    let v=62, dir=1, run=true;
+    setInterval(function(){
+      if(!run) return;
+      v+=dir*1.4;
+      if(v>=100){v=100;dir=-1} if(v<=0){v=0;dir=1}
+      bar.style.width=v+'%';
+      if(val) val.textContent=Math.round(v)+'%';
+    },140);
+    if(pp) pp.addEventListener('click',function(){run=!run;pp.textContent=run?'PAUSE':'PLAY';});
+  }
+})();
+
+/* ================= interactive demos 10 / 11 ================= */
+(function(){
+  const dk=document.querySelector('.d10'); if(!dk) return;
+  const div=document.getElementById('d10div'), read=document.getElementById('d10read');
+  let dragging=false;
+  function update(clientX){
+    const wrap=dk.querySelector('.d10-wrap').getBoundingClientRect();
+    let pct=Math.max(18,Math.min(82,((clientX-wrap.left)/wrap.width)*100));
+    dk.style.setProperty('--split',pct.toFixed(1)+'%');
+    const a=Math.round(wrap.width*pct/100), b=Math.round(wrap.width*(100-pct)/100);
+    read.textContent='SPLIT '+pct.toFixed(0)+'% / '+(100-pct).toFixed(0)+'% · A '+a+'px · B '+b+'px · '+(pct<=18.01||pct>=81.99?'CLAMP 强制钳制':'CLAMP OK');
+  }
+  div.addEventListener('pointerdown',function(e){dragging=true;div.setPointerCapture(e.pointerId);});
+  div.addEventListener('pointermove',function(e){if(dragging)update(e.clientX);});
+  div.addEventListener('pointerup',function(){dragging=false;});
+  div.addEventListener('pointercancel',function(){dragging=false;});
+})();
+(function(){
+  const range=document.getElementById('d11range'); if(!range) return;
+  const cur=document.getElementById('d11cur'), bpEl=document.getElementById('d11bp'), wEl=document.getElementById('d11w'), paneEl=document.getElementById('d11pane');
+  function upd(){
+    const v=+range.value;
+    cur.style.left=(((v-320)/880)*100)+'%';
+    const c=v<480?{n:'Compact',p:'1 栏'}:v<600?{n:'Medium',p:'1 栏 + 抽屉'}:v<840?{n:'Expanded',p:'2 栏'}:v<1200?{n:'Large',p:'2 栏 + 侧栏'}:{n:'XL',p:'3 栏'};
+    cur.querySelector('b').textContent=v+' · '+c.n;
+    bpEl.textContent=c.n;
+    wEl.innerHTML=v+'<span style="font-family:var(--mono);font-size:11px;color:var(--faint)">dp</span>';
+    paneEl.textContent=c.p;
+  }
+  range.addEventListener('input',upd); upd();
+})();
+
+/* ================= copy buttons ================= */
+document.addEventListener('click',function(e){
+  const b=e.target.closest('.copy'); if(!b) return;
+  const box=b.closest('.codebox');
+  const txt=Array.prototype.map.call(box.querySelectorAll('.cl .cd'),function(x){return x.textContent;}).join('\n');
+  const done=function(){ b.classList.add('flash'); b.textContent='COPIED ✓'; setTimeout(function(){b.classList.remove('flash');b.textContent='COPY ⧉';},1200); };
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,done); }
+  else{ const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(x){}document.body.removeChild(ta);done(); }
+});
+
+/* ================= reveal + index active ================= */
+if('IntersectionObserver' in window && !RM){
+  const ro=new IntersectionObserver(function(en){
+    en.forEach(function(x){ if(x.isIntersecting){ x.target.classList.add('in'); ro.unobserve(x.target); } });
+  },{rootMargin:'0px 0px -8% 0px',threshold:0.03});
+  document.querySelectorAll('.reveal').forEach(function(el){ro.observe(el);});
+
+  const links=Array.prototype.slice.call(document.querySelectorAll('.cab-index a'));
+  const map={}; links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+  const io=new IntersectionObserver(function(en){
+    en.forEach(function(x){
+      if(x.isIntersecting && map[x.target.id]){
+        links.forEach(function(a){a.classList.remove('act');});
+        map[x.target.id].classList.add('act');
+      }
+    });
+  },{rootMargin:'-28% 0px -58% 0px',threshold:0});
+  document.querySelectorAll('.comp,.bcard').forEach(function(s){io.observe(s);});
+}else{
+  document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});
+}
+if(RM) document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});
+
+})();
+</script>
+</body>
+</html>

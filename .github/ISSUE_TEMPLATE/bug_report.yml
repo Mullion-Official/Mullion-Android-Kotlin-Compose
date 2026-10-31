@@ -1,0 +1,85 @@
+name: Bug report
+description: Something breaks at a specific width, hinge or inset.
+title: "[bug] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping make adaptation less fragile.
+        A width boundary (599/600, 839/840, 1199/1200) is often the fastest clue.
+
+  - type: input
+    id: module
+    attributes:
+      label: Module
+      description: core / compose / view / sample
+      placeholder: compose
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: 1.0.0 or main@abc1234
+    validations:
+      required: true
+
+  - type: input
+    id: width
+    attributes:
+      label: Window width / class
+      description: Include the width in dp and the Bp class if known.
+      placeholder: 760dp / Expanded
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device / emulator
+      placeholder: Pixel 7 API 36, Pixel Tablet API 35, foldable HALF_OPENED...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Screenshots and a minimal reproduction are very welcome.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Code, sample card, or steps. If possible, try the adjacent width class too.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / stack trace
+      render: shell
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Pre-flight
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: This is reproducible without app-specific custom layout code (or I explain why it is a framework issue).
+          required: true

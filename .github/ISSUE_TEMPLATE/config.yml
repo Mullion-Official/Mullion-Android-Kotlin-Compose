@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/mullion-android/mullion/tree/main/docs
+    about: Breakpoints, foldables, components, view tier, architecture.
+  - name: Design cabinet
+    url: https://github.com/mullion-android/mullion/blob/main/docs/showcase.html
+    about: The static 26-module design reference.

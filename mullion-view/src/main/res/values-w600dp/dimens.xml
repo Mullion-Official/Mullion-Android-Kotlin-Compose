@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="mullion_spacing_section">80dp</dimen>
+    <dimen name="mullion_type_display">44sp</dimen>
+    <dimen name="mullion_pane_margin">24dp</dimen>
+    <dimen name="mullion_pane_gutter">24dp</dimen>
+    <dimen name="mullion_pane_min_width">280dp</dimen>
+    <dimen name="mullion_radius_panel">18dp</dimen>
+</resources>

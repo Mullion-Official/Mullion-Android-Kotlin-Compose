@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MullionLayoutParams">
+        <attr name="mullionMinWidthDp" format="integer" />
+        <attr name="mullionMaxWidthDp" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="MullionPaneLayout">
+        <attr name="mullionMinPaneWidth" format="dimension" />
+        <attr name="mullionPaneGutter" format="dimension" />
+        <attr name="mullionMaxPanes" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="MullionGlassLayout">
+        <attr name="mullionCornerRadius" format="dimension" />
+        <attr name="mullionGlassAlpha" format="float" />
+        <attr name="mullionBorderColor" format="color" />
+        <attr name="mullionSelected" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="MullionButtonView">
+        <attr name="mullionButtonVariant">
+            <enum name="filled" value="0" />
+            <enum name="tonal" value="1" />
+            <enum name="outlined" value="2" />
+            <enum name="text" value="3" />
+        </attr>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,71 @@
+name: Android CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build, test and assemble
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: |
+            platforms;android-36
+            build-tools;36.0.0
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Unit tests (pure core)
+        run: ./gradlew :mullion-core:testDebugUnitTest --stacktrace
+
+      - name: Assemble libraries and sample
+        run: >
+          ./gradlew
+          :mullion-core:assembleRelease
+          :mullion-compose:assembleRelease
+          :mullion-view:assembleRelease
+          :sample:assembleDebug
+          --stacktrace
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: mullion-sample-debug
+          path: sample/build/outputs/apk/debug/sample-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload test report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: |
+            mullion-core/build/reports/tests/
+            **/build/reports/
+          if-no-files-found: ignore
+          retention-days: 7

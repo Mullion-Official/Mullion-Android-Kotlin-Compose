@@ -1,0 +1,52 @@
+name: Feature request
+description: Propose a new component, policy or fold/inset behavior.
+title: "[feature] "
+labels: ["enhancement", "needs-design"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        MULLION adds components only when they remove a width / inset / hinge
+        decision from application code. Please describe the decision, not just
+        the widget.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The adaptation problem
+      description: What width, hinge, inset or window scenario is currently painful?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed API / behavior
+      description: A signature, a sketch, or a description of how it should collapse.
+    validations:
+      required: true
+
+  - type: input
+    id: widths
+    attributes:
+      label: Relevant widths
+      placeholder: 375, 600, 840, 1180; fold seam 20dp
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: This can be expressed without a second breakpoint table.
+          required: true
+        - label: I can help with a sample or test.
+          required: false
