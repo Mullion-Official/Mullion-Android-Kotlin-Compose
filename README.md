@@ -216,6 +216,36 @@ dependencies {
 
 > 仓库已经配置好 `maven-publish` 与 sources jar。当前可用 `./gradlew publishReleasePublicationToLocalRepoRepository` 发布到 `build/repo`，或发布到自己的私有仓库 / Maven Central。仓库没有伪造 Central 状态；示例使用的是 project 依赖。
 
+### JitPack（多模块）
+
+JitPack 会按 Git tag 构建并发布三个独立模块：
+
+```kotlin
+// settings.gradle.kts
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+```
+
+```kotlin
+dependencies {
+    implementation("com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-core:1.0.0")
+    implementation("com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-compose:1.0.0")
+    implementation("com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-view:1.0.0")
+}
+```
+
+- `mullion-compose` 会传递依赖 `mullion-core`，只写 compose 也可以；
+- `mullion-view` 同样传递依赖 core；
+- 版本号就是 Git tag，例如 `1.0.0`；
+- 构建命令由根目录 `jitpack.yml` 固定为三个模块的 `publishToMavenLocal`，避免 JitPack 只抓到 sample；
+- 首次请求某个 tag 时 JitPack 会现构建，之后是缓存。
+
+
 ### 一个最小 Compose 应用
 
 ```kotlin

@@ -112,3 +112,27 @@ Verify before uploading:
 | `view` | 4 View classes, 2 glass views, ResourceScaler, EdgeToEdge, resources/attrs |
 
 All three are `minSdk 21`, `compileSdk 36`, Java 17 bytecode, Apache-2.0.
+
+
+## JitPack
+
+The repository ships `jitpack.yml` with an explicit multi-module install:
+
+```yaml
+jdk:
+  - openjdk17
+install:
+  - ./gradlew :mullion-core:publishToMavenLocal :mullion-compose:publishToMavenLocal :mullion-view:publishToMavenLocal
+```
+
+On JitPack the build scripts switch the publication coordinates to:
+
+```text
+com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-core:TAG
+com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-compose:TAG
+com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-view:TAG
+```
+
+The normal `dev.mullion:*` coordinates remain unchanged for local/Maven Central
+publishing. JitPack is selected by its `JITPACK=true` environment variable, so
+there is no second source tree.

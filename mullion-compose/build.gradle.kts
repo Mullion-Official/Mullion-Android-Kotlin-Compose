@@ -37,8 +37,11 @@ kotlin {
 }
 
 
-group = "dev.mullion"
-version = "1.0.0"
+val isJitPack = System.getenv("JITPACK") == "true"
+val jitPackGroup = "com.github.Mullion-Official.Mullion-Android-Kotlin-Compose"
+
+group = if (isJitPack) jitPackGroup else "dev.mullion"
+version = if (isJitPack) System.getenv("VERSION") ?: "1.0.0" else "1.0.0"
 
 android {
     publishing {
@@ -53,7 +56,7 @@ afterEvaluate {
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
-                artifactId = "compose"
+                artifactId = if (isJitPack) "mullion-compose" else "compose"
                 pom {
                     name.set("MULLION Compose")
                     description.set("Adaptive and base Compose components for MULLION. 320dp to 1200dp, fold-aware.")

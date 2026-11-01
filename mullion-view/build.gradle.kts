@@ -26,8 +26,11 @@ kotlin {
 }
 
 
-group = "dev.mullion"
-version = "1.0.0"
+val isJitPack = System.getenv("JITPACK") == "true"
+val jitPackGroup = "com.github.Mullion-Official.Mullion-Android-Kotlin-Compose"
+
+group = if (isJitPack) jitPackGroup else "dev.mullion"
+version = if (isJitPack) System.getenv("VERSION") ?: "1.0.0" else "1.0.0"
 
 android {
     publishing {
@@ -42,7 +45,7 @@ afterEvaluate {
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
-                artifactId = "view"
+                artifactId = if (isJitPack) "mullion-view" else "view"
                 pom {
                     name.set("MULLION View")
                     description.set("View-tier adaptive layouts, glass views and resource scaler for MULLION.")
