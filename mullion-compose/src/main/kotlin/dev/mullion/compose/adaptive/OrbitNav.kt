@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -188,6 +189,7 @@ private fun Rail(
     Column(
         modifier = Modifier
             .width(80.dp)
+            .fillMaxHeight()
             .glass(shape = RoundedCornerShape(0.dp), level = GlassLevel.Panel)
             .padding(horizontal = 9.dp, vertical = 12.dp)
             .selectableGroup(),
@@ -248,6 +250,7 @@ private fun Drawer(
     Column(
         modifier = Modifier
             .width(216.dp)
+            .fillMaxHeight()
             .glass(shape = RoundedCornerShape(0.dp), level = GlassLevel.Panel)
             .padding(horizontal = 12.dp, vertical = 16.dp)
             .selectableGroup(),
