@@ -203,23 +203,9 @@ cd Mullion-Android-Kotlin-Compose
 ./gradlew :mullion-core:assembleRelease :mullion-compose:assembleRelease :mullion-view:assembleRelease
 ```
 
-### 作为依赖
+### 从 JitPack 引入（当前可直接使用）
 
-发布坐标：
-
-```kotlin
-dependencies {
-    implementation("dev.mullion:core:1.0.0")
-    implementation("dev.mullion:compose:1.0.0") // Compose 组件
-    implementation("dev.mullion:view:1.0.0")    // View 布局 / 玻璃 View / ResourceScaler
-}
-```
-
-> 仓库已经配置好 `maven-publish` 与 sources jar。当前可用 `./gradlew publishReleasePublicationToLocalRepoRepository` 发布到 `build/repo`，或发布到自己的私有仓库 / Maven Central。仓库没有伪造 Central 状态；示例使用的是 project 依赖。
-
-### JitPack（多模块）
-
-JitPack 会按 Git tag 构建并发布三个独立模块：
+JitPack 已按 tag `1.0.0` 构建通过，三个模块可分别依赖：
 
 ```kotlin
 // settings.gradle.kts
@@ -237,18 +223,36 @@ dependencies {
     implementation("com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-core:1.0.0")
     implementation("com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-compose:1.0.0")
     implementation("com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-view:1.0.0")
-
-    // 或者一次引入三个模块（JitPack 聚合坐标）
-    // implementation("com.github.Mullion-Official:Mullion-Android-Kotlin-Compose:1.0.0")
 }
 ```
 
-- `mullion-compose` 会传递依赖 `mullion-core`，只写 compose 也可以；
-- `mullion-view` 同样传递依赖 core；
-- 版本号就是 Git tag，例如 `1.0.0`；
-- 构建命令由根目录 `jitpack.yml` 固定为三个模块的 `publishToMavenLocal`，避免 JitPack 只抓到 sample；
-- 首次请求某个 tag 时 JitPack 会现构建，之后是缓存。
+| 模块 | 坐标 | 内容 |
+| --- | --- | --- |
+| `mullion-core` | `…:mullion-core:1.0.0` | 断点、分栏、折叠几何、窗口状态 |
+| `mullion-compose` | `…:mullion-compose:1.0.0` | 26 个 Compose 组件与主题 |
+| `mullion-view` | `…:mullion-view:1.0.0` | Android View / XML 布局与玻璃 View |
 
+- `mullion-compose`、`mullion-view` 会传递依赖 `mullion-core`；只做 Compose 工程时只引 `mullion-compose` 即可。
+- 一次引入三个模块可用聚合坐标：
+
+```kotlin
+implementation("com.github.Mullion-Official:Mullion-Android-Kotlin-Compose:1.0.0")
+```
+
+- 版本号就是 Git tag；根目录 [`jitpack.yml`](jitpack.yml) 固定执行三个模块的 `publishToMavenLocal`，避免 JitPack 只抓到 sample。
+- JitPack 构建页：https://jitpack.io/#Mullion-Official/Mullion-Android-Kotlin-Compose/1.0.0
+
+### 本地 / Maven Central（预留）
+
+`dev.mullion:core`、`dev.mullion:compose`、`dev.mullion:view` 是源码内的常规发布坐标，仓库已配置 `maven-publish` 与 sources jar；它们**没有声称已经在 Maven Central 上线**。需要时可用：
+
+```bash
+./gradlew :mullion-core:publishReleasePublicationToLocalRepoRepository \
+  :mullion-compose:publishReleasePublicationToLocalRepoRepository \
+  :mullion-view:publishReleasePublicationToLocalRepoRepository
+```
+
+发布到 `build/repo`，或按 `docs/publishing.md` 接到自己的私有仓库 / Central 流程。
 
 ### 一个最小 Compose 应用
 

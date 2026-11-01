@@ -133,6 +133,16 @@ com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-compose:TAG
 com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-view:TAG
 ```
 
+JitPack also exposes the aggregate artifact:
+
+```text
+com.github.Mullion-Official:Mullion-Android-Kotlin-Compose:TAG
+```
+
+`1.0.0` was built successfully and all three AARs were verified from the
+JitPack repository. `mullion-compose` and `mullion-view` POMs correctly point
+at the JitPack `mullion-core` coordinate.
+
 The normal `dev.mullion:*` coordinates remain unchanged for local/Maven Central
 publishing. JitPack is selected by its `JITPACK=true` environment variable, so
 there is no second source tree.
