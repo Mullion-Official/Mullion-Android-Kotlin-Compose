@@ -119,15 +119,21 @@ On a physical foldable (Pixel Fold / 9 Pro Fold), `WindowInfoTracker` supplies `
 - View interop: real `MullionCardView` + `MullionButtonView` rendered inside `AndroidView`; clicking the View button updates its TextView.
 - Snackbar triggered from adb tap; action/dismiss path completed.
 
-## Demo video
+## Demo videos
 
-`docs/media/mullion-demo.mp4`
+`docs/media/mullion-demo.mp4` — vertical
 
 - 1080×1920, 30fps, H.264, 47.5s, no audio (add your own Douyin music).
 - Intro/outro title cards + light and dark live reference-app takes: workbench → B4 detail → metrics/logs → settings, then the same screens in system dark.
 - Recorded in `demo_fullscreen` mode so no status/navigation bars distract from the UI.
 - Light and dark screenshots: `docs/images/ref-light-workbench.png`, `ref-dark-workbench.png`.
 - A cover image is at `docs/media/mullion-cover.png`.
+
+`docs/media/mullion-large-screen.mp4` — large screen
+
+- 2560×1600 (16:10), 30fps, H.264, 52.5s, no audio.
+- Recorded at 1280dp logical width and 320dpi: Drawer + 3-pane Devices, side dialog, permission panel.
+- Cover: `docs/media/mullion-large-cover.png`.
 
 ## Theme verification
 

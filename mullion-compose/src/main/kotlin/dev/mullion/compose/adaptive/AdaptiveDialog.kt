@@ -16,7 +16,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -141,7 +141,7 @@ public fun AdaptiveDialog(
                         if (side) {
                             Modifier
                                 .width(sideWidth)
-                                .fillMaxHeight()
+                                .heightIn(max = (window.heightDp - 64f).dp)
                                 .padding(vertical = 16.dp, horizontal = 16.dp)
                         } else {
                             Modifier

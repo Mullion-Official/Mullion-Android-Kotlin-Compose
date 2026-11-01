@@ -98,11 +98,21 @@ MullionTheme(darkTheme = false) { App() }
 
 ## 演示视频
 
+### 竖版 · 47 秒
+
 [![MULLION reference demo cover](docs/media/mullion-cover.png)](docs/media/mullion-demo.mp4)
 
-**[▶ 观看 / 下载 47 秒演示片](docs/media/mullion-demo.mp4)** · 1080×1920 · 30fps · H.264 · 无音轨（方便你在抖音里配乐）
+**[▶ 观看 / 下载竖版演示片](docs/media/mullion-demo.mp4)** · 1080×1920 · 30fps · H.264 · 无音轨（方便你在抖音里配乐）
 
-镜头：浅色工作台 → 设备详情 → 指标 / 日志 → 设置，然后切到系统深色，同一套界面即时换肤。画面来自真机模拟器上的参考应用，不是组件静态图；组件柜从设置页进入。
+镜头：浅色工作台 → 设备详情 → 指标 / 日志 → 设置，然后切到系统深色，同一套界面即时换肤。
+
+### 大屏 · 52 秒
+
+[![MULLION large-screen demo cover](docs/media/mullion-large-cover.png)](docs/media/mullion-large-screen.mp4)
+
+**[▶ 观看 / 下载大屏演示片](docs/media/mullion-large-screen.mp4)** · 2560×1600（16:10）· 30fps · H.264 · 无音轨
+
+镜头：1280dp 大屏工作台 → Drawer 导航 → 设备列表 / 详情 / 预览三栏 → 指标 / 日志 → 侧滑重启确认 → 权限面板。画面来自真机模拟器上的参考应用，不是拉伸后的手机截图。
 
 ## 参考应用：设备运维控制台
 
