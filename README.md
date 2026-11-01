@@ -7,6 +7,7 @@
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2-FFD166)](https://kotlinlang.org)
 [![Compose](https://img.shields.io/badge/Compose-1.9-84F2FF)](https://developer.android.com/jetpack/compose)
 [![Components](https://img.shields.io/badge/components-26-FF8354)](#the-26-modules)
+[![JitPack](https://jitpack.io/v/Mullion-Official/Mullion-Android-Kotlin-Compose.svg)](https://jitpack.io/#Mullion-Official/Mullion-Android-Kotlin-Compose)
 
 ![MULLION reference app at 411dp](docs/images/hero.png)
 
@@ -236,6 +237,9 @@ dependencies {
     implementation("com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-core:1.0.0")
     implementation("com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-compose:1.0.0")
     implementation("com.github.Mullion-Official.Mullion-Android-Kotlin-Compose:mullion-view:1.0.0")
+
+    // 或者一次引入三个模块（JitPack 聚合坐标）
+    // implementation("com.github.Mullion-Official:Mullion-Android-Kotlin-Compose:1.0.0")
 }
 ```
 

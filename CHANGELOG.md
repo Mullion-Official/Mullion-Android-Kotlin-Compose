@@ -34,6 +34,7 @@ semantic versioning.
   offline restart failure and permission results.
 - `MultiPane` / `SearchLayout` content-width fallback: a preview/filter rail is
   dropped before the detail pane can collapse into a one-character column.
+- JitPack multi-module publishing via `jitpack.yml`, with per-module coordinates and an aggregate artifact for tag `1.0.0`.
 - Context-derived dimensions: `MullionDimens.forBp()` + `mullionDimens()`; `PaneStrategy` derives its gutter from `MullionMetrics` instead of requiring a dp input; semantic `MullionViewport` replaces raw preview widths.
 - Immersive bottom navigation: translucent overlay above scrolling content,
   system navigation bar transparent with contrast enforcement disabled, and
