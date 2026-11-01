@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.mullion.compose.theme.LocalMullionDimens
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.theme.MullionMotion
 import dev.mullion.compose.theme.MullionTextStyles
@@ -90,7 +91,7 @@ public fun MullionButton(
     val clickable = enabled && !loading
 
     Box(
-        modifier = modifier.heightIn(min = MullionDimens.Default.touchTarget),
+        modifier = modifier.heightIn(min = LocalMullionDimens.current.touchTarget),
         contentAlignment = Alignment.Center,
     ) {
         Row(
@@ -190,7 +191,7 @@ public fun MullionIconButton(
         label = "IconButton.press",
     )
     Box(
-        modifier = modifier.heightIn(min = MullionDimens.Default.touchTarget),
+        modifier = modifier.heightIn(min = LocalMullionDimens.current.touchTarget),
         contentAlignment = Alignment.Center,
     ) {
         Box(

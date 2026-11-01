@@ -29,6 +29,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.mullion.compose.theme.LocalMullionDimens
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.theme.MullionDimens
 import dev.mullion.compose.theme.MullionMotion
@@ -62,7 +63,7 @@ public fun MullionSwitch(
 
     Row(
         modifier = modifier
-            .heightIn(min = MullionDimens.Default.touchTarget)
+            .heightIn(min = LocalMullionDimens.current.touchTarget)
             .toggleable(
                 value = checked,
                 enabled = enabled,

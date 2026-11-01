@@ -27,6 +27,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.mullion.compose.theme.LocalMullionDimens
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.theme.MullionDimens
 import dev.mullion.compose.theme.MullionMotion
@@ -50,7 +51,7 @@ public fun MullionCheckbox(
 ) {
     Row(
         modifier = modifier
-            .heightIn(min = MullionDimens.Default.touchTarget)
+            .heightIn(min = LocalMullionDimens.current.touchTarget)
             .toggleable(
                 value = checked,
                 enabled = enabled,
@@ -165,7 +166,7 @@ public fun MullionRadio(
 ) {
     Row(
         modifier = modifier
-            .heightIn(min = MullionDimens.Default.touchTarget)
+            .heightIn(min = LocalMullionDimens.current.touchTarget)
             .selectable(
                 selected = selected,
                 enabled = enabled,

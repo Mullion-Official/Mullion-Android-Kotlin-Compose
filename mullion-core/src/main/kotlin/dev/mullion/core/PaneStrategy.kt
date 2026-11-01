@@ -16,7 +16,8 @@ public enum class PaneSlot {
  * A resolved pane composition.
  *
  * @property slots the slots that are currently visible, in visual order.
- * @property gutterDp the space between panes, derived from the active bucket.
+ * @property gutterDp the resolved space between panes. It comes from the
+ *   active width bucket unless the caller explicitly overrides it.
  */
 public data class PanePlan(
     public val slots: List<PaneSlot>,
@@ -53,11 +54,11 @@ public data class PanePlan(
 public data class PaneStrategy(
     public val counts: Map<Bp, Int> = DEFAULT_COUNTS,
     public val maxPanes: Int = 3,
-    public val gutterDp: Int = 24,
+    public val gutterDp: Int? = null,
 ) {
     init {
         require(maxPanes >= 1) { "maxPanes must be at least 1, was $maxPanes" }
-        require(gutterDp >= 0) { "gutterDp must be >= 0, was $gutterDp" }
+        require(gutterDp == null || gutterDp >= 0) { "gutterDp must be >= 0, was $gutterDp" }
     }
 
     /** Number of panes allowed by the class, before slot clamping. */
@@ -76,7 +77,8 @@ public data class PaneStrategy(
     public fun plan(bp: Bp, slots: List<PaneSlot>): PanePlan {
         require(slots.isNotEmpty()) { "at least one pane slot is required" }
         val visible = minOf(countFor(bp), slots.size)
-        return PanePlan(slots = slots.take(visible), gutterDp = gutterDp)
+        val resolvedGutter = gutterDp ?: MullionMetrics.forBp(bp).paneGutterDp
+        return PanePlan(slots = slots.take(visible), gutterDp = resolvedGutter)
     }
 
     /** Resolves the visible slots for a raw window width. */

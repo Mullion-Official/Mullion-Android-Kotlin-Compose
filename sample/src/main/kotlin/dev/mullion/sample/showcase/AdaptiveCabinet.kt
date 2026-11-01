@@ -71,6 +71,7 @@ import dev.mullion.compose.theme.MullionTextStyles
 import dev.mullion.compose.theme.glass
 import dev.mullion.compose.window.mullionWindow
 import dev.mullion.core.Bp
+import dev.mullion.core.MullionViewport
 import dev.mullion.core.HingeInfo
 import dev.mullion.core.HingePosture
 import dev.mullion.core.MullionInsets
@@ -429,7 +430,7 @@ val adaptiveSpecs: List<AdaptiveSpec> = listOf(
 @Composable
 fun AdaptiveCard(spec: AdaptiveSpec) {
     val bp = mullionWindow().bp
-    val defaultWidth = if (bp.isCompact) 375 else 760
+    val defaultWidth = if (bp.isCompact) MullionViewport.Phone.widthDp else MullionViewport.Fold.widthDp
     var width by rememberSaveable(spec.number) { mutableIntStateOf(defaultWidth) }
     var codeOpen by rememberSaveable(spec.number) { mutableStateOf(false) }
 

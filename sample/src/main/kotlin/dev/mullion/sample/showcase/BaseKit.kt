@@ -62,6 +62,7 @@ import dev.mullion.compose.window.LocalMullionWindow
 import dev.mullion.compose.window.currentBreakpoint
 import dev.mullion.compose.window.mullionWindow
 import dev.mullion.core.Bp
+import dev.mullion.core.MullionViewport
 import dev.mullion.core.MullionWindowState
 import dev.mullion.core.PaneStrategy
 import dev.mullion.sample.ui.Lab
@@ -180,7 +181,7 @@ val baseSpecs: List<BaseSpec> = listOf(
 fun BaseKitSection() {
     val realBp = mullionWindow().bp
     var viewport by rememberSaveable {
-        mutableIntStateOf(if (realBp.isCompact) 375 else 760)
+        mutableIntStateOf(if (realBp.isCompact) MullionViewport.Phone.widthDp else MullionViewport.Fold.widthDp)
     }
     val columns = when {
         realBp.isCompact -> 1

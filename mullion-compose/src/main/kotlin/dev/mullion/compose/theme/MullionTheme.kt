@@ -9,12 +9,15 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.mullion.compose.window.mullionWindow
 
 private fun MullionPalette.toColorScheme(dark: Boolean) = if (dark) {
     darkColorScheme(
@@ -140,8 +143,13 @@ public fun MullionTheme(
     content: @Composable () -> Unit,
 ) {
     val palette = if (darkTheme) DarkMullionPalette else LightMullionPalette
+    val window = mullionWindow()
+    val density = LocalDensity.current
+    val dimens = remember(window.bp, density.fontScale) {
+        MullionDimens.forBp(window.bp, density.fontScale)
+    }
     CompositionLocalProvider(
-        LocalMullionDimens provides MullionDimens.Default,
+        LocalMullionDimens provides dimens,
         LocalMullionPalette provides palette,
     ) {
         MaterialTheme(

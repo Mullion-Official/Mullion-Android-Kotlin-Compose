@@ -16,6 +16,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import dev.mullion.compose.theme.LocalMullionDimens
+import dev.mullion.compose.theme.MullionDimens
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
@@ -107,7 +109,15 @@ public fun MullionWindowProvider(
     content: @Composable () -> Unit,
 ) {
     val resolved = window ?: LocalMullionWindow.current ?: rememberMullionWindowState()
-    CompositionLocalProvider(LocalMullionWindow provides resolved, content = content)
+    val density = LocalDensity.current
+    val dimens = remember(resolved.bp, density.fontScale) {
+        MullionDimens.forBp(resolved.bp, density.fontScale)
+    }
+    CompositionLocalProvider(
+        LocalMullionWindow provides resolved,
+        LocalMullionDimens provides dimens,
+        content = content,
+    )
 }
 
 /** The current width class. This is the only breakpoint call a screen needs. */

@@ -96,6 +96,26 @@ MullionTheme(darkTheme = false) { App() }
 - 玻璃配方也随主题切换 tint：浅色用低透明度深色玻璃，深色用白色玻璃，不再假设“组件只存在于黑底”。
 - 示例 App 的设置页会显示“浅色 / 深色 · 跟随系统”，并已验证系统切换时即时换肤。
 
+## 不把 dp 丢给业务代码
+
+MULLION 的规则是：**dp 只允许出现在标尺层，不允许出现在业务 Screen 的适配逻辑里。**
+
+```kotlin
+// ❌ 业务代码自己猜 padding、自己输入栏间距
+Row(Modifier.padding(24.dp))
+MultiPane(strategy = PaneStrategy(gutterDp = 24))
+
+// ✅ 从窗口上下文读同一把标尺
+Row(Modifier.padding(mullionDimens().screenPadding))
+MultiPane(strategy = PaneStrategy()) // gutter 由当前 Bp 的 MullionMetrics 决定
+```
+
+- `MullionDimens.forBp(bp, fontScale)` 根据宽度类与字体缩放派生出页面边距、卡片内边距、栏间距、对话框宽度、三栏最小详情宽度。
+- `mullionDimens()` / `LocalMullionDimens` 是唯一入口；`MullionWindowProvider` 在模拟窗口时会同步覆盖它，预览与真实窗口不会用到两把尺。
+- `PaneStrategy.gutterDp` 默认是 `null`，由 `MullionMetrics` 自动决定；显式传值只用于设计例外。
+- 预览/截图不写 `375 / 760 / 1180`，用 `MullionViewport.Phone / Fold / Desktop` 语义常量。
+- Android View 的 XML 仍需要 dimension 属性，这是平台约束；默认值应与 `values-w*` 桶一致。
+
 ## 演示视频
 
 ### 竖版 · 47 秒

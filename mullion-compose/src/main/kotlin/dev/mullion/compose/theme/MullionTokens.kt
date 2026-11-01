@@ -12,6 +12,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.mullion.core.Bp
+import dev.mullion.core.MullionMetrics
 
 /**
  * Semantic color tokens for one theme.
@@ -220,7 +222,14 @@ public object MullionMotion {
     public val NavMorph: Easing = CubicBezierEasing(0.2f, 0f, 0f, 1f)
 }
 
-/** Fixed geometry shared by controls. */
+/**
+ * Layout geometry shared by controls and shells.
+ *
+ * These are the *only* places dp numbers should be authored. Screens should
+ * not pass `padding = 16.dp` or `maxWidth = 1180.dp`; they read the current
+ * [MullionDimens] with [mullionDimens], which is derived from the active
+ * [Bp], the window width and the font scale.
+ */
 @Immutable
 public data class MullionDimens(
     public val touchTarget: Dp = 48.dp,
@@ -235,8 +244,70 @@ public data class MullionDimens(
     public val railWidth: Dp = 80.dp,
     public val drawerWidth: Dp = 216.dp,
     public val dividerWidth: Dp = 11.dp,
+    /** Maximum readable content width for a page. */
+    public val pageMaxWidth: Dp = 1180.dp,
+    /** Outer horizontal page padding. */
+    public val screenPadding: Dp = 16.dp,
+    /** Inner card padding. */
+    public val cardPadding: Dp = 16.dp,
+    /** Vertical gap between major sections. */
+    public val sectionGap: Dp = 16.dp,
+    /** Height reserved for a floating bottom navigation bar. */
+    public val bottomBarInset: Dp = 88.dp,
+    /** Height of an item in the bottom bar / rail / drawer. */
+    public val navItemHeight: Dp = 52.dp,
+    public val railItemHeight: Dp = 62.dp,
+    public val drawerItemHeight: Dp = 44.dp,
+    public val dialogMinWidth: Dp = 280.dp,
+    public val dialogMaxWidth: Dp = 520.dp,
+    public val dialogScreenPadding: Dp = 16.dp,
+    public val sheetMaxWidth: Dp = 420.dp,
+    public val paneDetailMin: Dp = 320.dp,
 ) {
     public companion object {
         public val Default: MullionDimens = MullionDimens()
+
+        /**
+         * Derives the ruler from the window class. Values are steps, not a
+         * linear function of width, so typography and touch targets stay sane
+         * at every size.
+         */
+        public fun forBp(bp: Bp, fontScale: Float = 1f): MullionDimens {
+            val metrics = MullionMetrics.forBp(bp)
+            val base = when (bp) {
+                Bp.Compact, Bp.Medium -> Default.copy(
+                    pageMaxWidth = 720.dp,
+                    screenPadding = 16.dp,
+                    cardPadding = 14.dp,
+                    sectionGap = 16.dp,
+                    dialogMaxWidth = 520.dp,
+                )
+
+                Bp.Expanded -> Default.copy(
+                    pageMaxWidth = 960.dp,
+                    screenPadding = 24.dp,
+                    cardPadding = 16.dp,
+                    sectionGap = 20.dp,
+                    dialogMaxWidth = 560.dp,
+                )
+
+                Bp.Large, Bp.XL -> Default.copy(
+                    pageMaxWidth = 1180.dp,
+                    screenPadding = 32.dp,
+                    cardPadding = 18.dp,
+                    sectionGap = 24.dp,
+                    dialogMaxWidth = 600.dp,
+                )
+            }
+            return base.copy(
+                gutter = metrics.paneGutterDp.dp,
+                paneDetailMin = if (bp.isCompact) 280.dp else 320.dp,
+                control = (base.control.value * fontScale.coerceIn(0.85f, 1.15f)).dp,
+            )
+        }
     }
 }
+
+/** The current responsive ruler. */
+@Composable
+public fun mullionDimens(): MullionDimens = LocalMullionDimens.current

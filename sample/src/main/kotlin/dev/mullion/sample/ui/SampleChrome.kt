@@ -58,6 +58,7 @@ import dev.mullion.compose.theme.MullionTextStyles
 import dev.mullion.compose.theme.glass
 import dev.mullion.compose.window.mullionWindow
 import dev.mullion.core.Bp
+import dev.mullion.core.MullionViewport
 
 /** A quiet, theme-aware wash behind the cabinet. No neon, no blueprint. */
 @Composable
@@ -209,8 +210,8 @@ fun WidthToggle(
             .padding(3.dp),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        listOf(375, 760, 1180).forEach { option ->
-            val selected = option == width
+        MullionViewport.entries.forEach { option ->
+            val selected = option.widthDp == width
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
@@ -226,11 +227,11 @@ fun WidthToggle(
                         },
                         CircleShape,
                     )
-                    .clickable { onChange(option) }
+                    .clickable { onChange(option.widthDp) }
                     .padding(horizontal = 12.dp, vertical = 6.dp),
             ) {
                 Text(
-                    text = option.toString(),
+                    text = option.widthDp.toString(),
                     style = MullionTextStyles.MonoSmall.copy(fontSize = 10.sp),
                     color = if (selected) MullionColors.OnVolt else MullionColors.Muted,
                 )

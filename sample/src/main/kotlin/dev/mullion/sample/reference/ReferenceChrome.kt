@@ -50,6 +50,7 @@ import dev.mullion.compose.base.MullionButtonSize
 import dev.mullion.compose.base.MullionButtonVariant
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.theme.MullionTextStyles
+import dev.mullion.compose.theme.mullionDimens
 import dev.mullion.compose.window.currentBreakpoint
 import dev.mullion.sample.ui.BrandMark
 import dev.mullion.sample.ui.SampleBody
@@ -61,7 +62,7 @@ fun ReferencePage(
     content: @Composable () -> Unit,
 ) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-        Box(Modifier.widthIn(max = 1180.dp).fillMaxSize()) {
+        Box(Modifier.widthIn(max = mullionDimens().pageMaxWidth).fillMaxSize()) {
             content()
         }
     }
@@ -504,7 +505,7 @@ fun ReferenceSection(
         modifier = modifier
             .fillMaxWidth()
             .appSurface(shape = RoundedCornerShape(20.dp))
-            .padding(18.dp),
+            .padding(mullionDimens().cardPadding),
         content = content,
     )
 }

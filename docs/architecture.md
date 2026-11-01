@@ -103,6 +103,22 @@ The View tier uses the same semantic names resolved from `values/colors.xml` and
 `values-night/colors.xml` through `MullionPalette.of(context)`. Glass, buttons
 and selected borders refresh on `onConfigurationChanged`.
 
+### Dimensions
+
+Screens do not pass dp values to adapt. `MullionDimens.forBp(bp, fontScale)`
+derives page width, page/card padding, gutter, navigation widths, dialog limits
+and minimum pane widths from the active window class; `mullionDimens()` (or
+`LocalMullionDimens`) is the single read point. `MullionWindowProvider` replaces
+the ruler together with a simulated window, so previews and screenshots never
+run on a different scale than the real window.
+
+`PaneStrategy` follows the same rule: its `gutterDp` defaults to `null`, which
+means “use `MullionMetrics.forBp(bp).paneGutterDp`”. Explicit dp overrides
+remain available for genuine design exceptions.
+
+Preview tools should choose `MullionViewport.Phone / Fold / Desktop` instead of
+writing 375 / 760 / 1180 in screen code.
+
 ### Glass
 
 `Modifier.glass(shape, level)`:

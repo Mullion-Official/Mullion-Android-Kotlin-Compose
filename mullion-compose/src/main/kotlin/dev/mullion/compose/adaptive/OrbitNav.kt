@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.mullion.compose.theme.GlassLevel
+import dev.mullion.compose.theme.LocalMullionDimens
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.theme.MullionFonts
 import dev.mullion.compose.theme.MullionMotion
@@ -118,6 +119,7 @@ private fun BottomBar(
     onSelect: (Int) -> Unit,
     icon: (@Composable (index: Int, selected: Boolean) -> Unit)?,
 ) {
+    val dimens = LocalMullionDimens.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -136,7 +138,7 @@ private fun BottomBar(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .height(52.dp)
+                    .height(dimens.navItemHeight)
                     .background(
                         color = if (selected) MullionColors.Volt.copy(alpha = 0.16f) else Color.Transparent,
                         shape = RoundedCornerShape(18.dp),
@@ -186,9 +188,10 @@ private fun Rail(
     onSelect: (Int) -> Unit,
     icon: (@Composable (index: Int, selected: Boolean) -> Unit)?,
 ) {
+    val dimens = LocalMullionDimens.current
     Column(
         modifier = Modifier
-            .width(80.dp)
+            .width(dimens.railWidth)
             .fillMaxHeight()
             .glass(shape = RoundedCornerShape(0.dp), level = GlassLevel.Panel)
             .padding(horizontal = 9.dp, vertical = 12.dp)
@@ -201,7 +204,7 @@ private fun Rail(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(62.dp)
+                    .height(dimens.railItemHeight)
                     .background(
                         color = if (selected) MullionColors.Volt.copy(alpha = 0.16f) else Color.Transparent,
                         shape = RoundedCornerShape(14.dp),
@@ -247,9 +250,10 @@ private fun Drawer(
     header: (@Composable () -> Unit)?,
     icon: (@Composable (index: Int, selected: Boolean) -> Unit)?,
 ) {
+    val dimens = LocalMullionDimens.current
     Column(
         modifier = Modifier
-            .width(216.dp)
+            .width(dimens.drawerWidth)
             .fillMaxHeight()
             .glass(shape = RoundedCornerShape(0.dp), level = GlassLevel.Panel)
             .padding(horizontal = 12.dp, vertical = 16.dp)
@@ -265,7 +269,7 @@ private fun Drawer(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp)
+                    .height(dimens.drawerItemHeight)
                     .background(
                         color = if (selected) MullionColors.Volt.copy(alpha = 0.16f) else Color.Transparent,
                         shape = CircleShape,

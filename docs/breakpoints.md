@@ -98,12 +98,12 @@ Pane count is not hardcoded into layouts. It is a value object:
 data class PaneStrategy(
     val counts: Map<Bp, Int> = DEFAULT_COUNTS, // 1,1,2,3,3
     val maxPanes: Int = 3,
-    val gutterDp: Int = 24,
+    val gutterDp: Int? = null, // null = derive from MullionMetrics for the active Bp
 )
 ```
 
 ```kotlin
-val strategy = PaneStrategy(maxPanes = 2)
+val strategy = PaneStrategy(maxPanes = 2) // gutter is contextual, not a dp input
 val plan = strategy.plan(Bp.Large, listOf(PaneSlot.List, PaneSlot.Detail, PaneSlot.Preview))
 // plan.count == 2
 // plan.slots == [List, Detail]

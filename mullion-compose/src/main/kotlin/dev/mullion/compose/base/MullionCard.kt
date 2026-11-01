@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import dev.mullion.compose.theme.GlassLevel
+import dev.mullion.compose.theme.LocalMullionDimens
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.theme.MullionMotion
 import dev.mullion.compose.theme.glass
@@ -35,7 +36,7 @@ public fun MullionCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     selected: Boolean = false,
-    contentPadding: PaddingValues = PaddingValues(18.dp),
+    contentPadding: PaddingValues? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val interaction = remember { MutableInteractionSource() }
@@ -45,7 +46,9 @@ public fun MullionCard(
         animationSpec = tween(MullionMotion.MicroMillis),
         label = "Card.press",
     )
-    val shape = RoundedCornerShape(12.dp)
+    val dimens = LocalMullionDimens.current
+    val padding = contentPadding ?: PaddingValues(dimens.cardPadding)
+    val shape = RoundedCornerShape(dimens.radiusCard)
 
     Column(
         modifier = modifier
@@ -86,7 +89,7 @@ public fun MullionCard(
                     Modifier
                 },
             )
-            .padding(contentPadding),
+            .padding(padding),
         content = content,
     )
 }

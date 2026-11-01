@@ -67,7 +67,8 @@ class PaneStrategyTest {
 
     @Test
     fun `gutter is carried into the plan`() {
-        assertEquals(24, PaneStrategy().plan(Bp.Expanded, slots).gutterDp)
+        assertEquals(MullionMetrics.Expanded.paneGutterDp, PaneStrategy().plan(Bp.Expanded, slots).gutterDp)
+        assertEquals(MullionMetrics.Compact.paneGutterDp, PaneStrategy().plan(Bp.Compact, slots).gutterDp)
         assertEquals(12, PaneStrategy(gutterDp = 12).plan(Bp.Expanded, slots).gutterDp)
     }
 
@@ -79,5 +80,26 @@ class PaneStrategyTest {
     @Test(expected = IllegalArgumentException::class)
     fun `empty slot list is rejected`() {
         PaneStrategy().plan(Bp.Expanded, emptyList())
+    }
+
+    @Test
+    fun `pane gutter follows the width class unless overridden`() {
+        val slots = listOf(PaneSlot.List, PaneSlot.Detail, PaneSlot.Preview)
+        assertEquals(
+            MullionMetrics.Compact.paneGutterDp,
+            PaneStrategy().plan(Bp.Compact, slots).gutterDp,
+        )
+        assertEquals(
+            MullionMetrics.Large.paneGutterDp,
+            PaneStrategy().plan(Bp.Large, slots).gutterDp,
+        )
+    }
+
+    @Test
+    fun `semantic viewports carry their own context`() {
+        assertEquals(Bp.Compact, MullionViewport.Phone.bp)
+        assertEquals(Bp.Expanded, MullionViewport.Fold.bp)
+        assertEquals(3, PaneStrategy().countFor(MullionViewport.Desktop.bp))
+        assertTrue(MullionViewport.Phone.metrics.paneGutterDp < MullionViewport.Desktop.metrics.paneGutterDp)
     }
 }

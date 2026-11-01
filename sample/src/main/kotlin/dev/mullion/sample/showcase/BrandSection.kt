@@ -418,7 +418,7 @@ fun BreakpointRail() {
  */
 @Composable
 fun BreakpointLab() {
-    var width by rememberSaveable { mutableIntStateOf(840) }
+    var width by rememberSaveable { mutableIntStateOf(Bp.Large.baselineWidthDp) }
     val bp = Bp.of(width)
     val nav = NavigationMode.forBp(bp)
     val panes = PaneStrategy().countFor(bp)

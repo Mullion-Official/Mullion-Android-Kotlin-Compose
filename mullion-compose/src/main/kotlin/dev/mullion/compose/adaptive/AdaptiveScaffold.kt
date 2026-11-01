@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.mullion.compose.theme.LocalMullionDimens
 import dev.mullion.compose.theme.MullionColors
 import dev.mullion.compose.window.mullionWindow
 import dev.mullion.core.NavigationMode
@@ -49,6 +50,7 @@ public fun AdaptiveScaffold(
 ) {
     val resolved = mode ?: mullionWindow().navigationMode
     val showSide = resolved == NavigationMode.Rail || resolved == NavigationMode.Drawer
+    val dimens = LocalMullionDimens.current
 
     Row(
         modifier = modifier
@@ -66,7 +68,7 @@ public fun AdaptiveScaffold(
             Box(modifier = Modifier.weight(1f)) {
                 content(
                     PaddingValues(
-                        bottom = if (resolved == NavigationMode.BottomBar) 88.dp else 0.dp,
+                        bottom = if (resolved == NavigationMode.BottomBar) dimens.bottomBarInset else 0.dp,
                     ),
                 )
                 if (resolved == NavigationMode.BottomBar) {
