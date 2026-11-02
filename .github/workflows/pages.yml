@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - "docs/**"
+      - "gitbook/**"
+      - "mullion-core/src/main/kotlin/**"
+      - "mullion-compose/src/main/kotlin/**"
+      - "mullion-view/src/main/kotlin/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -18,7 +22,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build-and-deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -27,15 +31,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install GitBook toolchain
+        working-directory: gitbook
+        run: npm ci
+
+      - name: Build GitBook
+        working-directory: gitbook
+        run: npm run build
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
           enablement: true
 
-      - name: Upload static docs
+      - name: Upload GitBook site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: gitbook/_book
 
       - name: Deploy
         id: deployment

@@ -1,0 +1,71 @@
+{
+	"gitbook": "3.2.2",
+	"title": "MULLION SDK",
+	"description": "MULLION Android 自适应组件框架文档：指南、设计风格与完整 API 参考",
+	"author": "MULLION-Official",
+	"language": "zh-hans",
+	"root": "./docs",
+	"links": {
+		"sidebar": {
+			"MULLION-Official": "https://github.com/Mullion-Official"
+		}
+	},
+	"plugins": [
+		"simple-page-toc",
+		"github",
+		"github-buttons",
+		"edit-link",
+		"anchors",
+		"anchor-navigation-ex",
+		"splitter",
+		"expandable-chapters-small",
+		"tbfed-pagefooter",
+		"sitemap-general",
+		"advanced-emoji"
+	],
+	"pluginsConfig": {
+		"theme-default": {
+			"showLevel": false
+		},
+		"github": {
+			"url": "https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose"
+		},
+		"github-buttons": {
+			"repo": "Mullion-Official/Mullion-Android-Kotlin-Compose",
+			"types": ["star"],
+			"size": "small"
+		},
+		"edit-link": {
+			"base": "https://github.com/Mullion-Official/Mullion-Android-Kotlin-Compose/blob/main/gitbook/docs",
+			"label": "编辑此页面"
+		},
+		"simple-page-toc": {
+			"maxDepth": 3,
+			"skipFirstH1": true
+		},
+		"anchor-navigation-ex": {
+			"showLevel": false,
+			"associatedWithSummary": false,
+			"multipleH1": false,
+			"printLog": false,
+			"mode": "float"
+		},
+		"sectionx": {
+			"tag": "b"
+		},
+		"sitemap-general": {
+			"prefix": "https://mullion-official.github.io/Mullion-Android-Kotlin-Compose/"
+		},
+		"tbfed-pagefooter": {
+			"copyright": "Copyright © 2026 MULLION-Official · Apache-2.0",
+			"modify_label": "文件最近一次修订时间：",
+			"modify_format": "YYYY-MM-DD HH:mm:ss"
+		},
+		"advanced-emoji": {
+			"shortcuts": {
+				"check": "✅",
+				"cross": "❌"
+			}
+		}
+	}
+}

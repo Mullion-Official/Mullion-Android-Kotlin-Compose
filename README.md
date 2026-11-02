@@ -559,7 +559,8 @@ CI：[.github/workflows/android.yml](.github/workflows/android.yml)。
 - [发布](docs/publishing.md)
 - [验证记录](docs/testing.md)
 - [静态设计基准 / 26 组件 HTML 柜](docs/showcase.html)
-- [落地页](docs/index.html)
+- [SDK 文档（GitBook / GitHub Pages）](https://mullion-official.github.io/Mullion-Android-Kotlin-Compose/)
+- [静态设计基准落地页](docs/index.html)
 
 原始设计参考：[布局.html](布局.html)、[组件.html](组件.html)。Android 实现、示例与文档为本仓库代码。
 

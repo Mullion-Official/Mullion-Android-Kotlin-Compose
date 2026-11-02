@@ -35,3 +35,7 @@ local.properties
 
 # Local Gradle home used during headless verification
 .gradle-home/
+
+# GitBook build output and deps
+gitbook/_book/
+gitbook/node_modules/
